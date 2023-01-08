@@ -1,0 +1,71 @@
+.title {
+    font-size: 25px;
+}
+
+.description {
+    font-size: 15px;
+}
+
+.body_text {
+    font-size: 15px;
+}
+
+#main_section h3, #main_section .title, #main_section .body_text {
+    background-color: white;
+    color: #24252A;
+}
+
+/* RESPONSIVE */
+@media screen and (max-width: 1000px) {
+    li {
+        font-size: 15px;
+    }
+
+    .title {
+        font-size: 20px;
+    }
+
+    .description {
+        font-size: 12px;
+    }
+
+    .body_text {
+        font-size: 10px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    li {
+        font-size: 12px;
+    }
+
+    .title {
+        font-size: 17px;
+    }
+
+    .description {
+        font-size: 10px;
+    }
+
+    .body_text {
+        font-size: 8px;
+    }
+}
+
+@media screen and (max-width: 300px) {
+    li {
+        font-size: 7px;
+    }
+
+    .title {
+        font-size: 12px;
+    }
+
+    .description {
+        font-size: 7px;
+    }
+
+    .body_text {
+        font-size: 3px;
+    }
+}
