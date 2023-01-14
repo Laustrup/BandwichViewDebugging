@@ -5,7 +5,9 @@ function renderHeader() {
         midSection = `
             <section>
                 <div class="wrapper">
-                    <input type="search" onchange="search(this)" placeholder="search" id="search-input">
+                    <input type="search" oninput="search()" placeholder="search"
+                        value="${(searchResponseElement !== undefined ? searchResponseElement : "")}"
+                        id="search-input">
                 </div>
             </section>
         `,
@@ -17,7 +19,7 @@ function renderHeader() {
                 <div class="wrapper">
                     <div id="header_title">
                         <a href="${frontpageURL}" class="image_button">
-                            <img src="../static/images/logo.png" alt="BANDWICH">
+                            <img id="header_logo" src="../static/images/logo.png" alt="BANDWICH">
                         </a>
                     </div>
                     |

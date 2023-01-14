@@ -12,13 +12,13 @@ function dashboardURL(searchQuery) {
     return viewDomainURL + "dashboard" + (searchQuery !== undefined ? "?search_query=" + searchQuery : "");
 }
 function chatRoomURL(id) {
-    return viewDomainURL + "?chat_room=" + id;
+    return viewDomainURL + "search?chat_room=" + id;
 }
 function eventURL(id) {
-    return viewDomainURL + "?event=" + id;
+    return viewDomainURL + "search?event=" + id;
 }
 function userURL(id) {
-    return viewDomainURL + "?user=" + id;
+    return viewDomainURL + "search?user=" + id;
 }
 
 //PERSISTENCE
@@ -67,4 +67,8 @@ function apiParticipationUpsert() {
 async function changeURL(url) {
     window.location.href = url;
     await renderMain();
+}
+
+function changeURLWithoutRender(url) {
+    history.pushState({}, null, url);
 }

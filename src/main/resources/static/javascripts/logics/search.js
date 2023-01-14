@@ -1,15 +1,32 @@
 let searchResponseElement = undefined,
     filteredSearch = undefined,
-    sortedSearch = undefined;
+    sortedSearch = undefined,
+    hasSorted = false;
 
 async function search(query) {
-    searchResponseElement = (await (await fetch(apiSearchURL(query))).json()).element;
-    window.location.href = dashboardURL(query);
-    await renderDashboard();
+    if (query === undefined)
+        query = document.getElementById("search-input").value;
+
+    console.log("Search:",query);
+    sessionStorage.setItem("has_searched","TRUE");
+    searchResponseElement = await fetchElement({
+        url: apiSearchURL(query),
+        method: POST
+    });
+
+    changeURLWithoutRender(dashboardURL(query));
+    if (document.getElementById("search-input").value === "")
+        document.getElementById("search-input").value = query;
+    await renderDashboard(searchResponseElement);
 }
 
-function hasSearched() { return searchResponseElement !== undefined; }
-function clearSearch() { searchResponseElement = undefined; }
+function hasSearched() {
+    return sessionStorage.getItem("has_searched") !== undefined;
+}
+function clearSearch() {
+    searchResponseElement = undefined;
+    sessionStorage.setItem("has_searched",undefined);
+}
 
 async function filterSearch() {
     function filter() {
@@ -48,11 +65,12 @@ async function filterSearch() {
     }
     filter();
 
-    await renderDashboard();
+    await renderDashboard(searchResponseElement);
 }
 
 async function sortSearch() {
     sortedSearch = (filteredSearch !== undefined ? filteredSearch : searchResponseElement);
+    hasSorted = true;
     if (document.getElementById("sorting") !== undefined) {
         switch (document.getElementById("sorting").value) {
             case "DON'T_SORT": {

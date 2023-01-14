@@ -21,10 +21,10 @@ public class ViewController {
     @GetMapping(startEndpoint+"sign_up") public String signup() { return _index; }
     @GetMapping(startEndpoint+"dashboard/?search_query={query}")
     public String search(@PathVariable(name = "query") String searchQuery) { return _index; }
-    @GetMapping(startEndpoint+"?chat_room={id}")
+    @GetMapping(startEndpoint+"search?chat_room={id}")
     public String chatRoom(@PathVariable(name = "id") long id) {return _index; }
-    @GetMapping(startEndpoint+"?event={id}")
+    @GetMapping(startEndpoint+"search?event={id}")
     public String event(@PathVariable(name = "id") long id) { return _index; }
-    @GetMapping(startEndpoint+"?user={id}")
+    @GetMapping(startEndpoint+"search?user={id}")
     public String user(@PathVariable(name = "id") long id) { return _index; }
 }

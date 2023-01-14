@@ -5,7 +5,7 @@ async function renderFrontpage(message) {
         document.getElementById("main_content").innerHTML = `
             <section id="frontpage_information_section">
                 <section id="welcome_detail_section">
-                    <h2 class="title">Welcome | </h2>
+                    <h2 class="title">Welcome</h2>
                     <p class="body_text">
                         Feel free to either login or signup,
                         otherwise browse some events underneath.

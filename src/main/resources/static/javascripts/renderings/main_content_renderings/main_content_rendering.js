@@ -1,7 +1,7 @@
 renderMain().then();
 
 async function renderMain() {
-    clearSearch();
+    //clearSearch();
     const isDeveloping = false;
 
     if (isDeveloping) {
@@ -15,7 +15,8 @@ async function renderMain() {
     }
     else {
         let url = window.location.href.split("=");
-        console.log("URL for switch is:",url);
+        console.log("Current href:",url);
+
         switch (url[0]) {
             case frontpageURL: {
                 await renderFrontpage();
@@ -33,8 +34,15 @@ async function renderMain() {
                 await renderProfile();
                 break;
             }
-            case dashboardURL(): {
+            case dashboardURL() || dashboardURL() + "?search_query": {
                 await renderDashboard();
+                break;
+            }
+            case dashboardURL() + "?search_query": {
+                if (searchResponseElement === undefined)
+                    await search(url[1]);
+
+                await renderDashboard(hasSorted ? sortedSearch : searchResponseElement);
                 break;
             }
             case viewDomainURL + "/?chat_room": {
@@ -46,7 +54,6 @@ async function renderMain() {
             }
             case (dashboardURL() + "/?search_query"): {
                 await search(url[1]);
-                await renderDashboard();
                 break;
             }
             case (viewDomainURL + "/?event"): {
@@ -70,4 +77,13 @@ async function renderMain() {
             }
         }
     }
+}
+
+function renderContent(content) {
+    document.getElementById("main_content").innerHTML = content;
+    let footer = document.getElementById("footer");
+    footer.style.position = "absolute";
+    footer.style.bottom = "0";
+    footer.style.left = "0";
+    footer.style.right = "0";
 }

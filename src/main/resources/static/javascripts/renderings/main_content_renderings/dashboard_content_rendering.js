@@ -1,4 +1,4 @@
-async function renderDashboard() {
+async function renderDashboard(search) {
     const user = getUser();
     document.getElementById("main_content").innerHTML = `
         <section id="welcoming_section">
@@ -8,7 +8,7 @@ async function renderDashboard() {
             </section>
         </section>
         <section>
-            ${generateSearchSection(sortedSearch)}
+            ${search !== undefined ? generateSearchSection(search) : ``}
             <section id="attending_events_section">
                 ${(userIsAttendingEvents(user) ? `
                     <h3 class="title">
@@ -44,10 +44,10 @@ async function renderDashboard() {
 }
 
 function userIsAttendingEvents(user) {
-    if (user.events > 0) {
+    if (user !== undefined && user.events.length > 0) {
         user.events.forEach((event) => {
             event.participations.forEach((participation) => {
-                if (participation._participant._primaryId === user.id)
+                if (participation.participant.primaryId === user.id)
                     return true;
             });
         });

@@ -1,18 +1,20 @@
 async function renderEvent(items) {
-    const response = items.doFetch ? await (await fetch(apiEventGet(items.id))) : undefined;
+    const response = items.doFetch ? await (await generateFetch({
+        url: apiEventGet(items.id),
+        method: POST
+    })) : undefined;
 
-
-    if (response !== undefined && response._error) {
-        await renderFrontpage(response._message === undefined ? "Event couldn't be found..." : response._message);
+    if (response !== undefined && response.error) {
+        await renderFrontpage(response.message === undefined ? "Event couldn't be found..." : response.message);
     } else {
-        const event = items.doFetch ? response._element : undefined,
+        const event = items.doFetch ? response.element : undefined,
             user = userIsLoggedIn() ? getUser() : items.event;
 
         function participationStatus() {
             for (let i = 0; i < user.events; i++) {
                 if (user.events[i].primaryId === items.id) {
                     for (let j = 0; j < user.events[i].participations.length; j++) {
-                        if (user.events[i].participations[j].event.primaryId === event._primaryId)
+                        if (user.events[i].participations[j].event.primaryId === event.primaryId)
                             return user.events[i].participations[j];
                     }
                     break;
@@ -24,10 +26,10 @@ async function renderEvent(items) {
 
         async function generateEditingContent() {
             async function changeActDatalist(search) {
-                const response = (await (await fetch(apiSearchURL(search))).json())._element._users._data;
+                const response = (await (await fetch(apiSearchURL(search))).json()).element.users;
                 let options = ``;
                 response.forEach((user) => {
-                    options += `<option value="${user._id}">${user._username}</option>`;
+                    options += `<option value="${user.id}">${user.username}</option>`;
                 });
 
                 document.getElementById("act_id").innerHTML = `
@@ -50,53 +52,53 @@ async function renderEvent(items) {
                             <div id="name_editing">
                                 <h5 class="title">Name and description</h5>
                                 <label for="title">Title:</label>
-                                <input type="text" id="title" value="${event._title}">
+                                <input type="text" id="title" value="${event.title}">
                                 <label for="description">Description:</label>
-                                <input type="text" id="description" value="${event._description}">
+                                <input type="text" id="description" value="${event.description}">
                             </div>
                             <div id="practical_editing">
                                 <label for="open_doors">Open doors:</label>
-                                <input type="datetime-local" id="open_doors" value="${Date.parse(event._openDoors.toString())}">
+                                <input type="datetime-local" id="open_doors" value="${Date.parse(event.openDoors.toString())}">
                                 <label for="price">Price:</label>
-                                <input type="number" id="price" value="${event._price}">
+                                <input type="number" id="price" value="${event.price}">
                                 <label for="tickets_url">Ticket URL:</label>
-                                <input type="text" id="tickets_url" value="${event._ticketsURL}">
+                                <input type="text" id="tickets_url" value="${event.ticketsURL}">
                                 <label for="public">Public:</label>
-                                <input type="checkbox" id="public" value="${event._public._truth}">
+                                <input type="checkbox" id="public" value="${event.public.truth}">
                             </div>
                             <div id="contact_editing">
                                 <h5 class="title">Contact information</h5>
                                 <label for="email">Email:</label>
-                                <input type="email" id="email" value="${event._contactInfo._email}">
+                                <input type="email" id="email" value="${event.contactInfo.email}">
                                 <div id="phone_editing">
                                     <h6 class="title">Phone</h6>
                                     <label for="phone_number">Number:</label>
-                                    <input type="tel" id="phone_number" value="${event._contactInfo._phone._numbers}">
+                                    <input type="tel" id="phone_number" value="${event.contactInfo.phone.numbers}">
                                     <label for="is_mobile">Is mobile:</label>
-                                    <input type="checkbox" id="is_mobile" value="${event._contactInfo._phone._isMobile}">
+                                    <input type="checkbox" id="is_mobile" value="${event.contactInfo.phone.isMobile}">
                                 </div>
                                 <div id="address_editing">
                                     <h6 class="title">Address</h6>
                                     <label for="city">City:</label>
-                                    <input type="text" id="address" value="${event._contactInfo._address._city}">
+                                    <input type="text" id="address" value="${event.contactInfo.address.city}">
                                     <label for="street">Street:</label>
-                                    <input type="text" id="street" value="${event._contactInfo._address._street}">
+                                    <input type="text" id="street" value="${event.contactInfo.address.street}">
                                     <label for="floor">Floor:</label>
-                                    <input type="text" id="floor" value="${event._contactInfo._address._floor}">
+                                    <input type="text" id="floor" value="${event.contactInfo.address.floor}">
                                     <label for="postal">Postal:</label>
-                                    <input type="text" id="postal" value="${event._contactInfo._address._postal}">
+                                    <input type="text" id="postal" value="${event.contactInfo.address.postal}">
                                     <label for="country">Country:</label>
-                                    <input type="text" id="country" value="${event._contactInfo._country._title}">
+                                    <input type="text" id="country" value="${event.contactInfo.country.title}">
                                 </div>
                             </div>
                             <div id="venue_editing">
                                 <h5 class="title">Venue</h5>
                                 <label for="location">Location:</label>
-                                <input type="text" id="location" value="${event._location}">
+                                <input type="text" id="location" value="${event.location}">
                                 <label for="size">Size:</label>
-                                <input type="text" id="size" value="${event._size}">
+                                <input type="text" id="size" value="${event.size}">
                             </div>
-                            <button onclick="${await editEvent(event._primaryId)}">Edit</button>
+                            <button onclick="${await editEvent(event.primaryId)}">Edit</button>
                         </div>
                     </section>
                 </section>
@@ -115,19 +117,19 @@ async function renderEvent(items) {
                 <section id="delete_section">
                     <h5>Do you wish to delete the event?</h5>
                     <p id="event_delete_response_message"></p>
-                    <button onclick="${await deleteEvent(event._primaryId)}">Delete</button>
+                    <button onclick="${await deleteEvent(event.primaryId)}">Delete</button>
                 </section>
             `;
         }
 
         function generateRequestsContent() {
             let content = ``;
-            for (let i = 0; i < event._requests._data.length; i++) {
-                const request = event._requests._data[i];
-                for (let j = 0; j < request._act._data.length; j++) {
+            for (let i = 0; i < event.requests.length; i++) {
+                const request = event.requests[i];
+                for (let j = 0; j < request.act.length; j++) {
                     content += `
                         <div class="request_section">
-                            <h6 class="description">${request._act._data[j].username}</h6>
+                            <h6 class="description">${request.act[j].username}</h6>
                             <p class="request_description">${request.message}</p>
                             <label for="${i}_${j}_approve">Approve</label>
                             ${request.approved.truth ? `
@@ -140,7 +142,7 @@ async function renderEvent(items) {
                 }
             }
 
-            return event._requests._data.length > 0 ?  `
+            return event.requests.length > 0 ?  `
                 <section id="requests_section">
                     <h4 class="title">Requests</h4>
                     <div id="description">
@@ -154,10 +156,10 @@ async function renderEvent(items) {
         function generateEventContent() {
             switch (items.content) {
                 case "BULLETINS": {
-                    return generateBulletinContent(event._bulletins._data);
+                    return generateBulletinContent(event.bulletins);
                 }
                 case "ALBUMS": {
-                    return generateAlbumContainers(event._albums);
+                    return generateAlbumContainers(event.albums);
                 }
                 case "EDITING": {
                     return generateEditingContent();
@@ -170,14 +172,14 @@ async function renderEvent(items) {
                 }
                 case "PARTICIPATIONS": {
                     let participations = {};
-                    for (let i = 0; i < event._participations.length; i++)
-                        participations += event._participations[i];
+                    for (let i = 0; i < event.participations.length; i++)
+                        participations += event.participations[i];
 
                     return participations !== undefined && participations.length > 0 ?
                         userContainers(participations) : `<h2>There aren't any participations yet...</h2>`;
                 }
                 default: {
-                    return generateBulletinContent(event._bulletins._data);
+                    return generateBulletinContent(event.bulletins);
                 }
             }
         }
@@ -193,7 +195,7 @@ async function renderEvent(items) {
 
         function userIsEditor() {
             for (let i = 0; i < user.events; i++)
-                if (user.primaryId === event._venue.primaryId)
+                if (user.primaryId === event.venue.primaryId)
                     return true;
             return false;
         }
@@ -208,20 +210,20 @@ async function renderEvent(items) {
                 <div id="cover_image_container">
                     <div class="wrapper">
                         ${await generateImage({
-                            endpoint: event.albums[0]._items._data[1]._endpoint,
+                            endpoint: event.albums[0].items[1].endpoint,
                             class: "cover_image"
                         })}
                     </div>
                 </div>
                 <section id="event_header_detail_section">
                     ${await generateImage({
-                        endpoint: event.albums[0]._items._data[0]._endpoint,
+                        endpoint: event.albums[0].items[0].endpoint,
                         class: "profile_image"
                     })}
                     <div>
                         <div id="event_header_titles">
-                            <h2 id="event_title" class="title">${event._title}</h2>
-                            <h3 id="event_venue_title" class="descritpion">${event._venue._username}</h3>
+                            <h2 id="event_title" class="title">${event.title}</h2>
+                            <h3 id="event_venue_title" class="descritpion">${event.venue.username}</h3>
                         </div>
                         <div id="event_header_links">
                             <a onclick="${await changeEventContent("BULLETINS")}">
@@ -269,9 +271,9 @@ async function renderEvent(items) {
                 </section>
             </section>
             <section id="event_detail_section">
-                ${event._cancelled._truth ? `<h4 class="description">CANCELLED</h4>` : ``}
-                ${event._sold_out._truth ? `<h4 class="description">SOLD OUT</h4>` : ``}
-                ${event._voluntary._truth ? `<p class="body_text">Voluntary</p>` : ``}
+                ${event.cancelled.truth ? `<h4 class="description">CANCELLED</h4>` : ``}
+                ${event.sold_out.truth ? `<h4 class="description">SOLD OUT</h4>` : ``}
+                ${event.voluntary.truth ? `<p class="body_text">Voluntary</p>` : ``}
                 <table>
                     <tr>
                         <th>Open doors:</th>
@@ -288,18 +290,18 @@ async function renderEvent(items) {
                         <th>Country:</th>
                     </tr>
                     <tr>
-                        <td>${event._openDoors.toLocaleString()}</td>
-                        <td>${event._start.toLocaleString()}</td>
-                        <td>${event._end.toLocaleString()}</td>
-                        <td>${event._length}</td>
-                        <td>${event._description}</td>
-                        <td><a href="https://www.google.com/maps/place/${event._location}/">${event._location}</a></td>
-                        <td>${event._price}</td>
-                        <td><a href="${event._ticketsURL}">${event._ticketsURL}</a></td>
-                        <td>${event._contactInfo._email}</td>
-                        <td>${event._contactInfo._phone._numbers}</td>
-                        <td>${event._contactInfo._address._street}, ${event._contactInfo._address._floor}. ${event._contactInfo._address._postal} ${event._contactInfo._address._city}</td>
-                        <td>${event._contactInfo._country._title}</td>
+                        <td>${event.openDoors.toLocaleString()}</td>
+                        <td>${event.start.toLocaleString()}</td>
+                        <td>${event.end.toLocaleString()}</td>
+                        <td>${event.length}</td>
+                        <td>${event.description}</td>
+                        <td><a href="https://www.google.com/maps/place/${event.location}/">${event.location}</a></td>
+                        <td>${event.price}</td>
+                        <td><a href="${event.ticketsURL}">${event.ticketsURL}</a></td>
+                        <td>${event.contactInfo.email}</td>
+                        <td>${event.contactInfo.phone.numbers}</td>
+                        <td>${event.contactInfo.address.street}, ${event.contactInfo.address.floor}. ${event.contactInfo.address.postal} ${event.contactInfo.address.city}</td>
+                        <td>${event.contactInfo.country.title}</td>
                     </tr>
                 </table>
             </section>

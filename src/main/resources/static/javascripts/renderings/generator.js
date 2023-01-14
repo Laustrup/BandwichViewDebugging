@@ -1,3 +1,5 @@
+const firebaseNotReady = true;
+
 function generateWelcomeSection() {
     const user = getUser();
     return (userIsLoggedIn() ?`
@@ -9,38 +11,22 @@ function generateWelcomeSection() {
                 Now you can explore the full experience of Bandwich
             </p>
         </section>
-    `: hasSearched() ?`
-        <section id="informative_welcome_section">
-            <h2 class="title">
-                Here's what we found | 
-            </h2>
-            <p class="description">
-                Hope that it is what you were looking for.
-                Notice that you can filter, sort and choose for a more specific search.
-            </p>
-        </section>
-    `: `
-        <section id="informative_welcome_section">
-            <h2 class="title">
-                That's odd | 
-            </h2>
-            <p class="description">
-                You weren't supposed to be here...
-            </p>
-        </section>
-    `);
+    `: ``);
 }
 
-function generateSearchSection(items) {
+function generateSearchSection(search) {
+    console.log("Items of search section:",search);
+
+
     function generateSearchContainers() {
-        let containers = generateEventContainers(items._events);
-        items._users.forEach((user) => {
+        let containers = generateEventContainers(search.events);
+        search.users.forEach((user) => {
             containers += `
                 <div class="container">
                     <div class="wrapper">
-                        <a onclick="changeURL(${userURL(user._id)})">
+                        <a onclick="changeURL(${userURL(user.id)})">
                             <h5 class="body_text">
-                                ${(user._username !== undefined ? user._username : user._title)}
+                                ${(user.username !== undefined ? user.username : user.title)}
                             </h5>
                         </a>
                     </div>
@@ -55,9 +41,19 @@ function generateSearchSection(items) {
         `
     }
 
-    return (hasSearched() ?`
+
+
+    return (search !== undefined && (search.users.length > 0 || search.events.length > 0) ? `
             <section id="search_header">
-                <h2 class="title">Searches</h2>
+                <section id="informative_welcome_section">
+                    <h2 class="title">
+                        Here's what we found
+                    </h2>
+                    <p class="description">
+                        Hope that it is what you were looking for.
+                        Notice that you can filter, sort and choose for a more specific search.
+                    </p>
+                </section>
                 ${generateFilterSection()}
             </section>
             <section id="search_index_section">
@@ -79,21 +75,19 @@ function generateSearchSection(items) {
                 </section>
                 ${generateSearchContainers()}
             </section>
-        `: ``);
+        ` : `
+            <section id="informative_welcome_section">
+                <h2 class="title">
+                    That's odd...
+                </h2>
+                <p class="description">
+                    Nothing was found.
+                </p>
+            </section>
+        `);
 }
 
 function generateFilterSection() {
-    function renderPriceRange(doRender) {
-        const html = `
-            <label for="price_range">Highest price:</label>
-            <div class="slide_container">
-                <input type="range" id="price_range" class="slider" min="0" max="3000">
-            </div>
-        `;
-        document.getElementById("price_defying").innerHTML = (doRender ? html : ``);
-        return html;
-    }
-
     return `
         <section id="filter_section">
             <section id="filter_header_section">
@@ -134,7 +128,7 @@ function generateFilterSection() {
                     </div>
                     <div class="price_filters">
                         <label for="only_free_events">Only free events:</label>
-                        <input type="checkbox" id="only_free_events" onclick="${renderPriceRange(this)}">
+                        <input type="checkbox" id="only_free_events" onclick="renderPriceRange()">
                         <div id="price_defying">
                             <label for="price_range">Highest price:</label>
                             <div class="slide_container">
@@ -165,6 +159,20 @@ function generateFilterSection() {
     `
 }
 
+function renderPriceRange() {
+    const html = `
+            <label for="price_range">Highest price:</label>
+            <div class="slide_container">
+                <input type="range" id="price_range" class="slider" min="0" max="3000">
+            </div>
+        `;
+    const onlyFreeEvents = document.getElementById("only_free_events").value;
+    document.getElementById("price_defying").innerHTML = (
+        onlyFreeEvents ? html : ``);
+
+    return html;
+}
+
 function generateIdolsContainers() { return userContainers(getIdols({id: "user_" + id })); }
 function generateFansContainers() { return userContainers(getFans({id: "user_" + id }))}
 
@@ -176,19 +184,23 @@ function generateAttendingEventContainers() {
 }
 
 async function generateEventContainers() {
-    return eventContainers(await (await fetch(apiEventGet(), {
-        method: "POST",
+    return eventContainers({
+        events: (await fetchElement({
+            url: apiEventGet(),
+            method: POST
+        })),
         onlyOccurring: false
-    })).json());
+    });
 }
 
-function eventContainers(item) {
-    let events = item.events;
+function eventContainers(items) {
+    let events = items.events;
+    console.log("Events for containers:", events);
 
-    if (item.onlyOccurring)
+    if (items.onlyOccurring)
         events.filter((event) => {
-            return event._isCancelled === false &&
-                Date.now().toEpochMilli() <= Date.parse(event._openDoors).toEpochMilli();
+            return event.cancelled === false &&
+                Date.now().toEpochMilli() <= Date.parse(event.openDoors).toEpochMilli();
         });
 
     return generateItemContainers({
@@ -201,7 +213,8 @@ function eventContainers(item) {
 function userContainers(users) {
     return generateItemContainers({
         elements: users,
-        titleClassTag: "container_title"
+        titleClassTag: "container_title",
+        kind: "USERT"
     });
 }
 
@@ -235,63 +248,67 @@ function generateBulletinContent(bulletins) {
 
 function generateAlbumContainers(user) {
     return generateItemContainers({
-        elements: (user.albums !== undefined ? user.albums : user._albums),
+        elements: (user.albums !== undefined ? user.albums : user.albums),
         kind: "ALBUMS"
     })
 }
+/*
+<!--${generateImage({
+    endpoint: (element.albums[0].items[0].endpoint !== undefined ?
+        element.albums[0].items[0].endpoint
+        : element.albums[0].items[0].endpoint),
+    class: "container_image"
+    }
+)}-->
 
+${generateImage({
+    endpoint: (element.albums[0].items[0].endpoint !== undefined ?
+            element.albums[0].items[0].endpoint
+                : element.albums[0].items[0].endpoint),
+    class: "bulletin_container_image"
+    }
+)}
+ */
 
 function generateItemContainers(item) {
     let containers = ``;
     item.elements.forEach((element) => {
+        const id = element.primaryId;
+        console.log(eventURL(id))
         containers += `
             <div class="${item.kind ? "bulletin_container" : "container"}">
                 <div class="wrapper">
                     ${(item.kind !== "BULLETINS" || item.kind !== "GIGS" 
-                    || ((element.isPublic !== undefined ? element.isPublic : element._isPublic)
+                    || ((element.isPublic !== undefined ? element.isPublic : element.isPublic)
                     || item.isOwnBulletin) ? 
-                    `<a href="${changeURL((element._authority === "EVENT" ? eventURL(element._id) : userURL(element._id) ))}">
-                        ${generateImage({
-                            endpoint: (element._albums._data[0]._items._data[0]._endpoint !== undefined ?
-                                            element._albums._data[0]._items._data[0]._endpoint
-                                                : element.albums._data[0]._items._data[0]._endpoint),
-                            class: "container_image"
-                            }
-                        )}
+                    `<a href="${item.kind === "EVENT" ? eventURL(id) :
+                        userURL(id)}">
                         <h5 class="${item.titleClassTag}">
                             ${(
-                                element._authority === "EVENT" ||  element._authority === "VENUE" ?
-                                    (element._title !== undefined ? element._title : element.title)
-                                        : element._username !== undefined ? element._username : element.username
+                                element.username !== undefined ? element.username :
+                                (element.title !== undefined ? element.title : "No username")
                             )}
                         </h5>
-                        ${(item.kind === "EVENT" ? `
-                        <p class="container_body_text">
-                            Doors opens at: ${ new Date(element._openDoors )}
-                        </p>
-                        <p class="container_body_text">
-                            Location: ${element._location}
-                        </p>
-                        ` : ``)}
-                    </a>` : (element.kind === "BULLETINS" ? 
-                    ((element.isSent !== undefined ? element.isSent : element._isSent) ? `
-                    ${generateImage({
-                        endpoint: (element._albums._data[0]._items._data[0]._endpoint !== undefined ?
-                                element._albums._data[0]._items._data[0]._endpoint
-                                    : element.albums._data[0]._items._data[0]._endpoint),
-                        class: "bulletin_container_image"
-                        }
-                    )}
+                    </a>
+                    ${(item.kind === "EVENT" ? `
+                    <p class="container_body_text">
+                        Doors opens at: ${ new Date(element.openDoors )}
+                    </p>
+                    <p class="container_body_text">
+                        Location: ${element.location}
+                    </p>
+                        ` : ``)}` : (element.kind === "BULLETINS" ? 
+                    ((element.isSent !== undefined ? element.isSent : element.isSent) ? `
                     <h5 class="${item.titleClassTag}">
-                        ${(element.author.username !== undefined ? element.author.username : element._author._username)}
+                        ${(element.author.username !== undefined ? element.author.username : element.author.username)}
                     </h5>
                     <p class="date_description">
-                        Written ${new Date((element.timestamp !== undefined ? element.timestamp : element._timestamp))}
+                        Written ${new Date((element.timestamp !== undefined ? element.timestamp : element.timestamp))}
                     </p>
                     <p class="bulletin_content">
-                        ${(element.content !== undefined ? element.content : element._content)}
+                        ${(element.content !== undefined ? element.content : element.content)}
                     </p>
-                    ${(((element.isEdited !== undefined ? element.isEdited === "true" : element._isEdited === "true") ? `
+                    ${(((element.isEdited !== undefined ? element.isEdited === "true" : element.isEdited === "true") ? `
                     <p class="notifying_description">
                         Is edited
                     </p>
@@ -323,50 +340,56 @@ function generateAlbumItemContent(image) {
 }
 
 function generateFollowingContent(user) {
-    return `
-        <section id="idols_section">
-        ${(user.idols.length > 0 ? `
+    if (user !== undefined)
+        return `
+            <section id="idols_section">
+            ${(user.idols.length > 0 ? `
+                <h3 class="title">
+                    Idols:
+                </h3>
+                <div class="container_box">
+                    <div class="wrapper">
+                        ${generateIdolsContainers()}
+                    </div>
+                </div>
+            `: `
+                <h3 class="title">
+                    At the moment you are not admiring any bands or artists...
+                </h3>
+                <p class="description">
+                    Feel welcome to browse through the different musicians.
+                </p>
+            `)}
+        </section>
+        <section id="fans_section">
+            ${(user.fans.length > 0 ? `
             <h3 class="title">
-                Idols:
+                Fans:
             </h3>
             <div class="container_box">
                 <div class="wrapper">
-                    ${generateIdolsContainers()}
+                    ${generateFansContainers()}
                 </div>
             </div>
-        `: `
+            ` : `
             <h3 class="title">
-                At the moment you are not admiring any bands or artists...
+                At the moment you are not being admired by any fans...
             </h3>
             <p class="description">
-                Feel welcome to browse through the different musicians.
+                Don't worry, they will come, if you start attending some events.
             </p>
-        `)}
-    </section>
-    <section id="fans_section">
-        ${(user.fans.length > 0 ? `
-        <h3 class="title">
-            Fans:
-        </h3>
-        <div class="container_box">
-            <div class="wrapper">
-                ${generateFansContainers()}
-            </div>
-        </div>
-        ` : `
-        <h3 class="title">
-            At the moment you are not being admired by any fans...
-        </h3>
-        <p class="description">
-            Don't worry, they will come, if you start attending some events.
-        </p>
-        `)}
-    </section>
-    `;
+            `)}
+        </section>
+        `;
+    else
+        ``;
 }
-
 
 //TODO Implement image generating
 async function generateImage(item) {
+    return !firebaseNotReady ? `<img src="${(await fetchImage(item.endpoint))}" alt="${item.author}">` : ``;
+}
 
+async function fetchImage(endpoint) {
+    const images = firebase.storage().ref().child('Images'), image = images.child('image1');
 }
