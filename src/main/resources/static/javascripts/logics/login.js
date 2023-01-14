@@ -2,42 +2,41 @@ if (userIsLoggedIn())
     updateSession().then();
 
 async function login() {
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("password").value;
+    if (sessionStorage.getItem("login_is_valid") === "true") {
+        let username = document.getElementById("username").value;
+        let password = document.getElementById("password").value;
 
-    const response = await (await fetch(apiLoginURL,{
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            _username: username,
-            _password: password
-        })
-    })).json();
+        const element = await fetchElement({
+            url: apiLoginURL,
+            method: POST,
+            body: {
+                username: username,
+                password: password
+            }
+        });
 
-    if (response === undefined) {
-        document.getElementById("response_message").innerHTML = `
-            <p class="body_text">
-                Response to server didn't have a success...
-            </p>
-        `;
-    } else if (response.message !== undefined) {
-        document.getElementById("response_message").innerHTML = `
-            <p class="body_text">
-                ${response.message}
-            </p>
-        `;
-    } else {
-        saveUser(response);
-        localStorage.setItem("logged_in", "true")
-        document.getElementById("response_message").innerHTML = `
-            <p class="body_text">
-                Congrats ${response.username}. You have logged in!
-            </p>
-        `;
-        document.location.href = profileURL;
+        if (element === undefined) {
+            document.getElementById("response_message").innerHTML = `
+                <p class="body_text">
+                    Response to server didn't have a success...
+                </p>
+            `;
+        } else if (element.message !== undefined) {
+            document.getElementById("response_message").innerHTML = `
+                <p class="body_text">
+                    ${element.message}
+                </p>
+            `;
+        } else {
+            saveUser(element);
+            localStorage.setItem("logged_in", "true")
+            document.getElementById("response_message").innerHTML = `
+                <p class="body_text">
+                    Congrats ${element.username}. You have logged in!
+                </p>
+            `;
+            document.location.href = profileURL;
+        }
     }
 }
 function logout() {

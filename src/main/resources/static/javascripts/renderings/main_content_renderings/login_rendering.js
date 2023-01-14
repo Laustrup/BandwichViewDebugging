@@ -1,36 +1,27 @@
 //TODO check requirements of the fields
-function renderLogin() {
+async function renderLogin() {
     if (!userIsLoggedIn()) {
-        let username = document.getElementById("username").value,
-            password = document.getElementById("password").value;
-        let usernameDetail = (username !== undefined && username.length > 50 ?
-                "Length of title can't be more than 50 charactors..." : ""),
-            passwordDetail = (password !== undefined && (password.length < 8 ||
-            !/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/g.test(password) ||
-            !/\d/g.test(password)) ?
-                "Length of password must be at least 8 charactors " +
-                "and the password must contain a special charactor and number..." : "");
-
         let content = `
             <section id="login_field_section">
                 <div class="wrapper">
                     <label for="username">Title:</label>
-                    <input type="text" id="username" placeholder="username/email...">
-                    <p class="detail_description">${usernameDetail}</p>
+                    <input type="text" id="username" placeholder="username/email..." oninput="analyseLogin()">
+                    <p class="detail_description" id="username_detail"></p>
                     
                     <label for="password">Password:</label>
-                    <input type="password" id="password" placeholder="********">
-                    <p class="detail_description">${passwordDetail}</p>
+                    <input type="password" id="password" placeholder="********" oninput="analyseLogin()">
+                    <p class="detail_description" id="password_detail"></p>
                 </div>
             </section>
             <section id="login_buttons">
                 <div class="wrapper">
-                    <button onclick="${() => {window.location.href=frontpageURL}}" class="return_button">
+                    <button onclick="${async () => { await changeURL(frontpageURL); }}" class="return_button">
                         Go back
                     </button>
                     <button onclick="login()" class="action_button">
                         Log in
                     </button>
+                    <p class="detail_description" id="response_message"></p>
                 </div>
             </section>
         `;
@@ -39,7 +30,7 @@ function renderLogin() {
             <section id="login_title_section">
                     <div class="wrapper">
                         <h4 class="title">
-                            Login |
+                            Login
                         </h4>
                         <p class="description">
                             Fill the fields in order to login.
@@ -60,8 +51,29 @@ function renderLogin() {
             </section>
         `;
     } else {
-        renderProfile();
+        await renderProfile();
     }
+}
+
+function analyseLogin() {
+    let username = document.getElementById("username").value,
+        password = document.getElementById("password").value;
+
+    console.log("Username length", username.length);
+    console.log("Password length", password.length);
+
+    let usernameIsValid = username.length <= 50 && username.length !== 0,
+        passwordIsValid = /\d/g.test(password) &&
+            /[~`!#$%^&*+=\-\[\]\\';,/{}|":<>?]/g.test(password)
+            && password.length >= 8 && password.length !== 0;
+
+    document.getElementById("username_detail").innerText = (password.length === 0 ? "" : (!usernameIsValid ?
+            "Length of title can't be more than 50 characters..." : ""));
+    document.getElementById("password_detail").innerText = (password.length === 0 ? "" : (!passwordIsValid ?
+            "Length of password must be at least 8 characters " +
+            "and the password must contain a special character and number..." : ""));
+
+    sessionStorage.setItem("login_is_valid",(usernameIsValid&&passwordIsValid).toString());
 }
 
 function renderSignup() {

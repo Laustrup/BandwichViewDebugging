@@ -56,7 +56,8 @@ function renderHeader() {
                         <a href="${dashboardURL()}" class="navigation_tag">
                             Dashboard
                         </a>
-                        <a href="${chatRoomURL(user.chatRooms[0].id)}" class="navigation_tag">
+                        <a href="${chatRoomURL(user.chatRooms > 0 ? user.chatRooms[0].id : undefined)}"
+                            class="navigation_tag">
                             Chat
                         </a>
                         <a href="${aboutURL}" class="navigation_tag">

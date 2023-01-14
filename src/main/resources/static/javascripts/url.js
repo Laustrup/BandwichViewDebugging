@@ -65,7 +65,7 @@ function apiParticipationUpsert() {
 }
 
 async function changeURL(url) {
-    window.location.href = url;
+    changeURLWithoutRender(url);
     await renderMain();
 }
 
