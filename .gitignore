@@ -34,3 +34,7 @@ build/
 
 ### JS ###
 /src/main/resources/static/javascripts/firebase/firebaseConfig.js
+
+### Build ###
+/out/
+/src/main/resources/META-INF/

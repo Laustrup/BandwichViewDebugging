@@ -9,21 +9,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 @Controller
 public class ViewController {
 
-    private final String _index = "index.html";
+    private final String _index = "index.html",
+                        startEndpoint = "/";
 
-    @GetMapping("/") public String preset() { return "redirect:/welcome"; }
-    @GetMapping("/welcome") public String welcome() { return _index; }
-    @GetMapping("/about") public String about() { return _index; }
-    @GetMapping("/profile") public String profile() { return _index; }
-    @GetMapping("/dashboard") public String dashboard() { return _index; }
-    @GetMapping("/log_in") public String login() { return _index; }
-    @GetMapping("/sign_up") public String signup() { return _index; }
-    @GetMapping("/dashboard/?search_query={query}")
+    @GetMapping(startEndpoint) public String preset() { return "redirect:" + startEndpoint + "welcome"; }
+    @GetMapping(startEndpoint+"welcome") public String welcome() { return _index; }
+    @GetMapping(startEndpoint+"about") public String about() { return _index; }
+    @GetMapping(startEndpoint+"profile") public String profile() { return _index; }
+    @GetMapping(startEndpoint+"dashboard") public String dashboard() { return _index; }
+    @GetMapping(startEndpoint+"log_in") public String login() { return _index; }
+    @GetMapping(startEndpoint+"sign_up") public String signup() { return _index; }
+    @GetMapping(startEndpoint+"dashboard/?search_query={query}")
     public String search(@PathVariable(name = "query") String searchQuery) { return _index; }
-    @GetMapping("/?chat_room={id}")
+    @GetMapping(startEndpoint+"?chat_room={id}")
     public String chatRoom(@PathVariable(name = "id") long id) {return _index; }
-    @GetMapping("/?event={id}")
+    @GetMapping(startEndpoint+"?event={id}")
     public String event(@PathVariable(name = "id") long id) { return _index; }
-    @GetMapping("/?user={id}")
+    @GetMapping(startEndpoint+"?user={id}")
     public String user(@PathVariable(name = "id") long id) { return _index; }
 }

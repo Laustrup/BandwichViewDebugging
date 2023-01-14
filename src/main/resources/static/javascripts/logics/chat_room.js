@@ -9,11 +9,11 @@ async function sendMessage() {
         author: user,
         content: message,
         sent: true,
-        edited: constructPlato({boolean: false}),
+        edited: booleanToPlato(false),
         public: isPublic,
         timestamp: Date.now()
     }));
-    await fetch(apiChatRoomUpsert, convertChatRoomToAPI(chatRoom));
+    await fetch(apiChatRoomUpsert, chatRoom);
 }
 
 async function editMessage(id) {
@@ -29,18 +29,21 @@ async function editMessage(id) {
             author: user,
             content: message,
             sent: true,
-            edited: constructPlato({boolean: true}),
+            edited: booleanToPlato(true),
             public: isPublic,
             timestamp: mail.timestamp
         } : editedChatRoom.push(mail));
     });
 
-    const response = (await (await fetch(apiChatRoomUpsert, convertChatRoomToAPI(chatRoom))).json())._element;
+    const response = (await (await generateFetch({
+        url: apiChatRoomUpsert,
+        method: 'POST',
+        body: chatRoom
+    })).json());
 
-    saveChatRooms({
-        chatRooms: [response],
-        id: "user_" + user.id
-    });
+    console.log("Response of upsert chat room",response);
+    if (response != null && response.element != null && !response.error)
+        saveUser(response.element);
 }
 
 //TODO Get responsible without calling api.
@@ -52,7 +55,7 @@ async function createChatRoom() {
         chatters = document.getElementById("chatters").value;
 
     const responsible = (await (await fetch(apiUserGetURL(
-        document.getElementById("responsible_id").value))).json())._element;
+        document.getElementById("responsible_id").value))).json()).element;
 
     const user = getUser();
     await fetch(apiChatRoomUpsert, convertChatRoomToAPI({
@@ -67,7 +70,7 @@ async function createChatRoom() {
             author: user,
             content: message,
             sent: true,
-            edited: constructPlato({boolean: false}),
+            edited: booleanToPlato(false),
             public: isPublic,
             timestamp: Date.now()
         }],
@@ -83,10 +86,10 @@ function getDraft(id) {
 }
 
 async function changeReceiverDataList(search) {
-    const response = (await (await fetch(apiSearchURL(search))).json())._element._users._data;
+    const response = (await (await fetch(apiSearchURL(search))).json()).element.users;
     let options = ``;
     response.forEach((user) => {
-        options += `<option value="${user._id}">${user._username}</option>`;
+        options += `<option value="${user.id}">${user.username}</option>`;
     });
 
     document.getElementById("responsible_id").innerHTML = `
@@ -100,11 +103,11 @@ function chooseChatRoom(chatRoom) {
     sessionStorage.setItem("chosen_chat_room_id", chatRoom.id);
     sessionStorage.setItem("chosen_chat_room_title", chatRoom.title)
     saveMails({
-        mails: chatRoom.mails._data,
+        mails: chatRoom.mails,
         id: "chosen_chat_room"
     });
     saveChatters({
-        chatters: chatRoom.chatters._data,
+        chatters: chatRoom.chatters,
         id: "chosen_chat_room"
     });
     savePrimitiveUser({
@@ -134,24 +137,13 @@ function getChosenChatRoom() {
         return undefined;
 }
 
-function convertChatRoomFromAPI(chatRoom) {
-    return {
-        id: chatRoom._id,
-        title: chatRoom._title,
-        mails: chatRoom._mails,
-        chatters: chatRoom._chatters,
-        responsible: chatRoom._responsible,
-        isAnswered: chatRoom._answered
-    }
-}
-
 function convertChatRoomToAPI(chatRoom) {
     return {
         _id: chatRoom.id,
         _title: chatRoom.title,
         _mails: chatRoom.mails,
         _chatters: chatRoom.chatters,
-        _responsible: chatRoom._responsible,
+        _responsible: chatRoom.responsible,
         _answeringTime: chatRoom.answeringTime,
         _answered: chatRoom.isAnswered
     }

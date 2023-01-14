@@ -1,4 +1,6 @@
-const viewDomainURL = "http://localhost:8080/";
+//VIEW
+//172.18.1.14
+const viewDomainURL = "http://localhost:8082/";
 const
     aboutURL = viewDomainURL + "about",
     frontpageURL = viewDomainURL + "welcome",
@@ -19,6 +21,8 @@ function userURL(id) {
     return viewDomainURL + "?user=" + id;
 }
 
+//PERSISTENCE
+//172.18.1.14
 const apiDomainURL = "http://localhost:8081/api/";
 const apiLoginURL = apiDomainURL + "user/login",
     apiChatRoomUpsert = apiDomainURL + "chat_room/upsert";

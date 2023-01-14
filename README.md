@@ -7,3 +7,4 @@ The original project can be found at [BandwichView](https://github.com/Laustrup/
 ## Changes made from original:
 
 * Styling of positioning header and footer with a note, that the page is being developed.
+* Items now fit backend DTOs.

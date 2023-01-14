@@ -87,17 +87,17 @@ async function editUser() {
         body: JSON.stringify(user)
     }))).json();
 
-    if (response._element !== undefined)
+    if (response.element !== undefined)
         saveUser(response);
-    else if (response._error)
-        document.getElementById("editing_message").innerText = response._message;
+    else if (response.error)
+        document.getElementById("editing_message").innerText = response.message;
     else
         document.getElementById("editing_message").innerText = "Something went wrong...";
 }
 
 async function approveRequest(request) {
-    request.approved.argument = request.approved.argument === "TRUE" ? "FALSE" : "TRUE";
-    request.approved.truth = !request.argument.truth;
+    request.approved = request.approved === "TRUE" ? "FALSE" : "TRUE";
+    request.approved = !request;
     let event = request.event;
     for (let i = 0; i < event.requests.length; i++) {
         if (event.requests.primaryId === request.primaryId && event.requests.secondaryId === request.secondaryId) {
@@ -114,11 +114,11 @@ async function approveRequest(request) {
         body: JSON.stringify(event)
     }));
 
-    if (!response._error)
+    if (!response.error)
         await updateSession();
     else
-        document.getElementById("request_message").innerText = response._message === undefined ?
-            "Something went wrong..." : response._message;
+        document.getElementById("request_message").innerText = response.message === undefined ?
+            "Something went wrong..." : response.message;
 }
 
 async function changeParticipation(participation) {
@@ -131,11 +131,11 @@ async function changeParticipation(participation) {
         body: JSON.stringify([participation])
     }));
 
-    if (!response._error)
+    if (!response.error)
         await updateSession();
     else
-        document.getElementById("participation_request_message").innerText = response._message === undefined ?
-            "Something went wrong..." : response._message;
+        document.getElementById("participation_request_message").innerText = response.message === undefined ?
+            "Something went wrong..." : response.message;
 }
 
 async function editEvent(id) {
@@ -154,7 +154,7 @@ async function editEvent(id) {
         countryTitle = document.getElementById("country").value,
         location = document.getElementById("location").value,
         size = document.getElementById("size").value,
-        isPublic = convertPlatoToAPI(booleanPlato(document.getElementById("public").value));
+        isPublic = booleanToPlato(document.getElementById("public").value);
 
     //TODO Country details along rest of other event values
     const event = {
@@ -202,8 +202,8 @@ async function editEvent(id) {
         body: JSON.stringify(event)
     }))).json();
 
-    if (response._error)
-        document.getElementById("editing_message").innerText = response._message;
+    if (response.error)
+        document.getElementById("editing_message").innerText = response.message;
     else
         document.getElementById("editing_message").innerText = "Something went wrong...";
 }
@@ -214,11 +214,11 @@ async function addGig(event) {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
-        }})))._element],
+        }}))).element],
         start = document.getElementById("gig_start").value,
         end = document.getElementById("gig_end").value;
 
-    event._gigs.push({
+    event.gigs.push({
         _act: act,
         _start: start,
         _end: end
@@ -232,11 +232,11 @@ async function addGig(event) {
         body: JSON.stringify(event)
     }));
 
-    if (!response._error)
+    if (!response.error)
         await updateSession();
     else
-        document.getElementById("gig_response_message").innerText = response._message === undefined ?
-            "Something went wrong..." : response._message;
+        document.getElementById("gig_response_message").innerText = response.message === undefined ?
+            "Something went wrong..." : response.message;
 }
 
 async function deleteEvent(id) {
@@ -248,11 +248,11 @@ async function deleteEvent(id) {
         }
     }));
 
-    if (response._element.truth)
+    if (response.element)
         await renderFrontpage("Delete was a success!");
     else
         document.getElementById("event_delete_response_message").innerText =
-            response._message === undefined ? "Something went wrong..." : response._message;
+            response.message === undefined ? "Something went wrong..." : response.message;
 }
 
 async function deleteUser(id) {
@@ -264,11 +264,11 @@ async function deleteUser(id) {
         }
     }));
 
-    if (response._element.truth)
+    if (response.element)
         await renderFrontpage("Delete was a success!");
     else
         document.getElementById("user_delete_response_message").innerText =
-            response._message === undefined ? "Something went wrong..." : response._message;
+            response.message === undefined ? "Something went wrong..." : response.message;
 }
 
 async function createEvent() {
@@ -287,7 +287,7 @@ async function createEvent() {
         countryTitle = document.getElementById("country").value,
         location = document.getElementById("location").value,
         size = document.getElementById("size").value,
-        isPublic = convertPlatoToAPI(booleanPlato(document.getElementById("public").value));
+        isPublic = booleanToPlato(document.getElementById("public").value);
 
     //TODO Country details along rest of other event values
     const event = {
@@ -335,13 +335,13 @@ async function createEvent() {
         body: JSON.stringify(event)
     }))).json();
 
-    if (!response._error) {
-        window.location.href = eventURL(response._element._primaryId);
+    if (!response.error) {
+        window.location.href = eventURL(response.element.primaryId);
         await renderMain();
     }
     else {
         document.getElementById("response_message").innerText =
-            response._message === undefined ? "Something went wrong" : response._message;
+            response.message === undefined ? "Something went wrong" : response.message;
     }
 }
 
@@ -355,7 +355,7 @@ async function follow(users) {
         body: JSON.stringify(users)
     }));
 
-    await renderUser(users[1]._primaryId);
+    await renderUser(users[1].primaryId);
 }
 
 async function unfollow(users) {
@@ -368,5 +368,5 @@ async function unfollow(users) {
         body: JSON.stringify(users)
     }));
 
-    await renderUser(users[1]._primaryId);
+    await renderUser(users[1].primaryId);
 }

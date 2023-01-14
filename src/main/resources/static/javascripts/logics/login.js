@@ -23,10 +23,10 @@ async function login() {
                 Response to server didn't have a success...
             </p>
         `;
-    } else if (response._message !== undefined) {
+    } else if (response.message !== undefined) {
         document.getElementById("response_message").innerHTML = `
             <p class="body_text">
-                ${response._message}
+                ${response.message}
             </p>
         `;
     } else {
@@ -34,7 +34,7 @@ async function login() {
         localStorage.setItem("logged_in", "true")
         document.getElementById("response_message").innerHTML = `
             <p class="body_text">
-                Congrats ${response._username}. You have logged in!
+                Congrats ${response.username}. You have logged in!
             </p>
         `;
         document.location.href = profileURL;
@@ -85,23 +85,20 @@ async function signup() {
                 const firstname = document.getElementById("first_name").value,
                     lastname = document.getElementById("last_name").value;
 
-                const response = await (await fetch(apiCreateArtist(password),{
+                const response = await (await generateFetch({
+                    url: apiCreateArtist(password),
                     method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
+                    body: {
                         _username: username,
                         _firstName: firstname,
                         _lastName: lastname,
                         _description: description,
                         _contactInfo: contactInformation
-                    })
+                    }
                 })).json();
 
                 if (response != null)
-                    saveUser(response._element);
+                    saveUser(response.element);
 
                 break;
             }
@@ -127,7 +124,7 @@ async function signup() {
                 })).json();
 
                 if (response != null)
-                    saveUser(response._element);
+                    saveUser(response.element);
 
                 break;
             }
@@ -151,7 +148,7 @@ async function signup() {
                     })).json();
 
                     if (response != null)
-                        saveUser(response._element);
+                        saveUser(response.element);
                 } else {
                     alert("You need to be signed in as an Artist to create a band...");
                 }
@@ -179,7 +176,7 @@ async function signup() {
                 })).json();
 
                 if (response != null)
-                    saveUser(response._element);
+                    saveUser(response.element);
 
                 break;
             }
@@ -198,7 +195,7 @@ async function updateSession() {
     if (user !== undefined)
         saveUser((await (await fetch(apiUserGetURL(
             localStorage.getItem("user_id")
-        ))).json())._element);
+        ))).json()).element);
 }
 
 function userIsLoggedIn() {

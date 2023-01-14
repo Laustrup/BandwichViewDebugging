@@ -2,7 +2,7 @@ renderMain().then();
 
 async function renderMain() {
     clearSearch();
-    const isDeveloping = true;
+    const isDeveloping = false;
 
     if (isDeveloping) {
         document.getElementById("main_content").innerHTML = `
@@ -15,6 +15,7 @@ async function renderMain() {
     }
     else {
         let url = window.location.href.split("=");
+        console.log("URL for switch is:",url);
         switch (url[0]) {
             case frontpageURL: {
                 await renderFrontpage();

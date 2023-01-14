@@ -1,84 +1,84 @@
 function saveUser(user) {
     if (userIsLoggedIn()) {
-        const id = user._primaryId;
+        const id = user.primaryId;
 
         localStorage.setItem("user_id",id);
-        localStorage.setItem("username",user._username);
-        if (user._firstName !== undefined)
-            localStorage.setItem("firstname",user._firstName);
-        if (user._fullName !== undefined)
-            localStorage.setItem("fullname", user._fullName);
-        if (user._lastName !== undefined)
-            localStorage.setItem("lastname",user._lastName);
-        localStorage.setItem("description",user._description);
-        localStorage.setItem("authority",user._authority);
+        localStorage.setItem("username",user.username);
+        if (user.firstName !== undefined)
+            localStorage.setItem("firstname",user.firstName);
+        if (user.fullName !== undefined)
+            localStorage.setItem("fullname", user.fullName);
+        if (user.lastName !== undefined)
+            localStorage.setItem("lastname",user.lastName);
+        localStorage.setItem("description",user.description);
+        localStorage.setItem("authority",user.authority);
 
         saveContactInformation({
-            info: user._contactInfo,
+            info: user.contactInfo,
             id: "user_" + id,
         });
         saveAlbums({
-            albums: user._albums._data,
+            albums: user.albums,
             id: "user_" + id
         });
-        if (user._ratings._data !== undefined)
-            saveRatings(user._ratings._data);
+        if (user.ratings !== undefined)
+            saveRatings(user.ratings);
         saveEvents({
-            events: user._events._data,
+            events: user.events,
             id: "user_" + id
         });
         saveChatRooms({
-            chatRooms: user._chatRooms._data,
+            chatRooms: user.chatRooms,
             id: "user_" + id
         });
-        saveSubscription(user._subscription);
-        if (user._bulletins._data !== undefined) {
+        saveSubscription(user.subscription);
+        if (user.bulletins !== undefined) {
             saveBulletins({
-                bulletins: user._bulletins._data,
+                bulletins: user.bulletins,
                 id: "user_" + id
             });
         }
-        if (user._idols._data !== undefined) {
+        if (user.idols !== undefined) {
             saveIdols({
-                idols: user._idols._data,
+                idols: user.idols,
                 id: "user_" + id
             });
         }
-        if (user._fans._data !== undefined) {
+        if (user.fans !== undefined) {
             saveFans({
-                fans: user._fans._data,
+                fans: user.fans,
                 id: "user_" + id
             });
         }
-        if (user._gigs._data !== undefined) {
+        if (user.gigs !== undefined) {
             saveGigs({
-                gigs: user._gigs._data,
+                gigs: user.gigs,
                 id: "user_" + id
             });
         }
-        if (user._bands._data !== undefined) {
+        if (user.bands !== undefined) {
             saveBands({
-                bands: user._bands._data,
+                bands: user.bands,
                 id: "user_" + id
             });
         }
 
         localStorage.setItem("runner",
-            (user._runner !== undefined ? user._runner :
-                user._gearDescription !== undefined ? user._gearDescription : undefined));
+            (user.runner !== undefined ? user.runner :
+                user.gearDescription !== undefined ? user.gearDescription : undefined));
 
-        if (user._requests._data !== undefined)
-            saveRequests(user._requests._data);
-        if (user._members._data !== undefined) {
+        if (user.requests !== undefined)
+            saveRequests(user.requests);
+        if (user.members !== undefined) {
             saveMembers({
-                members: user._members._data,
+                members: user.members,
                 id: "user_" + id
             });
         }
 
-        localStorage.setItem("location", (user._location !== undefined ? user._location : undefined));
-        localStorage.setItem("size", (user._size !== undefined ? user._size : undefined));
-        localStorage.setItem("timestamp",user._timestamp);
+        localStorage.setItem("location", (user.location !== undefined ? user.location : undefined));
+        localStorage.setItem("size", (user.size !== undefined ? user.size : undefined));
+        localStorage.setItem("timestamp",user.timestamp);
 
         return getUser();
     }
@@ -89,19 +89,19 @@ function saveContactInformation(item) {
     const index = (item.index !== undefined ? "_" + item.index : "");
     function generateKey(content) { return item.id + content + index; }
 
-    localStorage.setItem(generateKey("_email"), item._email);
-    localStorage.setItem(generateKey("_phone_country_title"), item._phone._country._title);
-    localStorage.setItem(generateKey("_phone_country_indexes"), item._phone._country._indexes);
-    localStorage.setItem(generateKey("_phone_number_digits"), item._phone._country._firstPhoneNumberDigits);
-    localStorage.setItem(generateKey("_phone_numbers"), item._numbers);
-    localStorage.setItem(generateKey("_phone_is_mobile"), item._mobile);
-    localStorage.setItem(generateKey("_street"), item._street);
-    localStorage.setItem(generateKey("_floor"), item._floor);
-    localStorage.setItem(generateKey("_postal"), item._postal);
-    localStorage.setItem(generateKey("_city"), item._city);
-    localStorage.setItem(generateKey("_country_title"), item._country._title);
-    localStorage.setItem(generateKey("_country_indexes"), item._country._indexes);
-    localStorage.setItem(generateKey("_country_number_digits"), item._country._firstPhoneNumberDigits);
+    localStorage.setItem(generateKey("_email"), item.email);
+    localStorage.setItem(generateKey("_phone_country_title"), item.phone.country.title);
+    localStorage.setItem(generateKey("_phone_country_indexes"), item.phone.country.indexes);
+    localStorage.setItem(generateKey("_phone_number_digits"), item.phone.country.firstPhoneNumberDigits);
+    localStorage.setItem(generateKey("_phone_numbers"), item.numbers);
+    localStorage.setItem(generateKey("_phone_is_mobile"), item.mobile);
+    localStorage.setItem(generateKey("_street"), item.street);
+    localStorage.setItem(generateKey("_floor"), item.floor);
+    localStorage.setItem(generateKey("_postal"), item.postal);
+    localStorage.setItem(generateKey("_city"), item.city);
+    localStorage.setItem(generateKey("_country_title"), item.country.title);
+    localStorage.setItem(generateKey("_country_indexes"), item.country.indexes);
+    localStorage.setItem(generateKey("_country_number_digits"), item.country.firstPhoneNumberDigits);
 }
 
 function saveAlbums(item) {
@@ -112,19 +112,19 @@ function saveAlbums(item) {
             return item.id + content + (item.index !== undefined ? item.index + "_" + i : i);
         }
 
-        localStorage.setItem(generateKey("_album_id_"), album._primaryId);
-        localStorage.setItem(generateKey("_album_title_"), album._title);
+        localStorage.setItem(generateKey("_album_id_"), album.primaryId);
+        localStorage.setItem(generateKey("_album_title_"), album.title);
         saveAlbumItems({
             album: album,
             id: item.id + "_album",
             index: i
         });
         savePrimitiveUser({
-            user: album._author,
+            user: album.author,
             id: item.id + "_album",
             index: i
         });
-        localStorage.setItem(generateKey("_album_timestamp_"),album._timestamp);
+        localStorage.setItem(generateKey("_album_timestamp_"),album.timestamp);
     }
     localStorage.setItem(item.id + "_album_amount", (albums.length).toString());
 }
@@ -132,37 +132,37 @@ function saveAlbums(item) {
 function saveAlbumItems(item) {
     const album = item.album;
 
-    for (let i = 0; i < album._items.length; i++) {
-        const item = album._items._data[i],
+    for (let i = 0; i < album.items.length; i++) {
+        const item = album.items[i],
             index = item.index + "_" + i;
         saveTags({
-            tag: item._tags._data,
+            tag: item.tags,
             id: item.id + "_album",
             index: i
         });
-        localStorage.setItem(item.id + "_item_endpoint_" + index, item._endpoint);
+        localStorage.setItem(item.id + "_item_endpoint_" + index, item.endpoint);
     }
-    localStorage.setItem(item.id + "_item_amount_" + item.index, (album._items._data.length).toString());
+    localStorage.setItem(item.id + "_item_amount_" + item.index, (album.items.length).toString());
 }
 
 function saveTags(item) {
     for (let i = 0; i < item.length; i++)
         savePrimitiveUser({
-            user: item.tag._author,
+            user: item.tag.author,
             id: item.id + "_tag",
             index: i
         });
-    localStorage.setItem(item.id + "_tags_length_" + item.index, (item._tags._data.length).toString())
+    localStorage.setItem(item.id + "_tags_length_" + item.index, (item.tags.length).toString())
 }
 
 function saveRatings(ratings) {
     for (let i = 0; i < ratings.length; i++) {
         const rating = ratings[i];
 
-        localStorage.setItem("rating_value_" + i, rating._value);
-        localStorage.setItem("rating_comment_" + i, rating._comment);
+        localStorage.setItem("rating_value_" + i, rating.value);
+        localStorage.setItem("rating_comment_" + i, rating.comment);
         savePrimitiveUser({
-            user: rating._judge,
+            user: rating.judge,
             kind: "judge",
             index: i
         });
@@ -180,48 +180,48 @@ function saveEvents(item) {
         function generateKey(content) {
             return id + content + index;
         }
-        localStorage.setItem(generateKey("_open_doors_"), event._openDoors);
-        localStorage.setItem(generateKey("_start_"), event._start);
-        localStorage.setItem(generateKey("_end_"), event._end);
-        localStorage.setItem(generateKey("_length_"), event._length);
-        localStorage.setItem(generateKey("_description_"), event._description);
-        localStorage.setItem(generateKey("_is_voluntary_"), event._voluntary._argument);
-        localStorage.setItem(generateKey("_is_public_"), event._public._argument);
-        localStorage.setItem(generateKey("_is_cancelled_"), event._cancelled._argument);
-        localStorage.setItem(generateKey("_is_sold_out_"), event._soldOut._argument);
-        localStorage.setItem(generateKey("_location_"), event._location);
-        localStorage.setItem(generateKey("_price_"), event._price);
-        localStorage.setItem(generateKey("_tickets_url_"), event._ticketsURL);
+        localStorage.setItem(generateKey("_open_doors_"), event.openDoors);
+        localStorage.setItem(generateKey("_start_"), event.start);
+        localStorage.setItem(generateKey("_end_"), event.end);
+        localStorage.setItem(generateKey("_length_"), event.length);
+        localStorage.setItem(generateKey("_description_"), event.description);
+        localStorage.setItem(generateKey("_is_voluntary_"), event.voluntary);
+        localStorage.setItem(generateKey("_is_public_"), event.public);
+        localStorage.setItem(generateKey("_is_cancelled_"), event.cancelled);
+        localStorage.setItem(generateKey("_is_sold_out_"), event.soldOut);
+        localStorage.setItem(generateKey("_location_"), event.location);
+        localStorage.setItem(generateKey("_price_"), event.price);
+        localStorage.setItem(generateKey("_tickets_url_"), event.ticketsURL);
         saveContactInformation({
-            info: event._contactInfo,
+            info: event.contactInfo,
             id: id,
             index: i
         });
         saveGigs({
-            gigs: event._gigs._data,
+            gigs: event.gigs,
             id: id,
             index: i
         });
         savePrimitiveUser({
-            user: event._venue,
+            user: event.venue,
             type: "venue",
             kind: "event",
             id: id,
             index: i
         });
         saveParticipations({
-            participations: event._participations,
+            participations: event.participations,
             event: event,
             id: id,
             index: i
         });
         saveBulletins({
-            bulletins: event._bulletins._data,
+            bulletins: event.bulletins,
             id: id,
             index: i
         });
         saveAlbums({
-            albums: event._albums._data,
+            albums: event.albums,
             id: id,
             index: i
         });
@@ -241,27 +241,27 @@ function saveParticipations(item) {
         }
 
         savePrimitiveUser({
-            user: participation._participant,
+            user: participation.participant,
             type: "participant",
             kind: "participation",
             index: item.index,
             id: id
         });
 
-        localStorage.setItem(generateKey("_id_"), item.event._primaryId);
-        localStorage.setItem(generateKey("_open_doors_"), item.event._openDoors);
-        localStorage.setItem(generateKey("_start_"), item.event._start);
-        localStorage.setItem(generateKey("_end_"), item.event._end);
-        localStorage.setItem(generateKey("_length_"), item.event._length);
-        localStorage.setItem(generateKey("_description_"), item.event._description);
-        localStorage.setItem(generateKey("_is_voluntary_"), item.event._voluntary._truth);
-        localStorage.setItem(generateKey("_is_public_"), item.event._public._truth);
-        localStorage.setItem(generateKey("_is_cancelled_"), item.event._cancelled._truth);
-        localStorage.setItem(generateKey("_is_sold_out_"), item.event._soldOut._truth);
-        localStorage.setItem(generateKey("_location_"), item.event._location);
-        localStorage.setItem(generateKey("_price_"), item.event._price);
-        localStorage.setItem(generateKey("_tickets_url_"), item.event._ticketsURL);
-        localStorage.setItem(generateKey("_type_"), participation._type);
+        localStorage.setItem(generateKey("_id_"), item.event.primaryId);
+        localStorage.setItem(generateKey("_open_doors_"), item.event.openDoors);
+        localStorage.setItem(generateKey("_start_"), item.event.start);
+        localStorage.setItem(generateKey("_end_"), item.event.end);
+        localStorage.setItem(generateKey("_length_"), item.event.length);
+        localStorage.setItem(generateKey("_description_"), item.event.description);
+        localStorage.setItem(generateKey("_is_voluntary_"), item.event.voluntary.truth);
+        localStorage.setItem(generateKey("_is_public_"), item.event.public.truth);
+        localStorage.setItem(generateKey("_is_cancelled_"), item.event.cancelled.truth);
+        localStorage.setItem(generateKey("_is_sold_out_"), item.event.soldOut.truth);
+        localStorage.setItem(generateKey("_location_"), item.event.location);
+        localStorage.setItem(generateKey("_price_"), item.event.price);
+        localStorage.setItem(generateKey("_tickets_url_"), item.event.ticketsURL);
+        localStorage.setItem(generateKey("_type_"), participation.type);
     }
     localStorage.setItem(item.id + "_participations_amount",participations.length);
 }
@@ -275,26 +275,26 @@ function saveChatRooms(item) {
             index = item.index + "_" + i;
         function generateKey(content) { return id + content + index; }
 
-        localStorage.setItem(generateKey("_chat_room_id_"), chatRoom._primaryId);
-        localStorage.setItem(generateKey("_chat_room_title_"), chatRoom._title)
+        localStorage.setItem(generateKey("_chat_room_id_"), chatRoom.primaryId);
+        localStorage.setItem(generateKey("_chat_room_title_"), chatRoom.title)
         saveMails({
-            mails: chatRoom._mails._data,
+            mails: chatRoom.mails,
             id: item.id + "_chat_room",
             index: i
         });
         saveChatters({
-            chatters: chatRoom._chatters._data,
+            chatters: chatRoom.chatters,
             id: item.id + "_chat_room",
             index: i
         });
         savePrimitiveUser({
-            user: chatRoom._responsible,
+            user: chatRoom.responsible,
             id: item.id + "_chat_room",
             kind: "responsible",
             index: i
         });
-        localStorage.setItem(generateKey("_chat_room_answering_time_"), chatRoom._answeringTime);
-        localStorage.setItem(generateKey("_chat_room_is_answered_"), chatRoom._answered);
+        localStorage.setItem(generateKey("_chat_room_answering_time_"), chatRoom.answeringTime);
+        localStorage.setItem(generateKey("_chat_room_is_answered_"), chatRoom.answered);
     }
     localStorage.setItem(item.id + "_chat_room_amount_" + (item.index !== undefined ? item.index : ""), chatRooms.length);
 }
@@ -308,18 +308,18 @@ function saveMails(item) {
             index = (item.index !== undefined ? item.index + "_" + i : "");
         function generateKey(content) { return id + content + index; }
 
-        localStorage.setItem(generateKey("_mail_id_"), mail._primaryId);
+        localStorage.setItem(generateKey("_mail_id_"), mail.primaryId);
         savePrimitiveUser({
-            user: mail._author,
+            user: mail.author,
             id: item.id + "_mail",
             kind: "author",
             index: i
         });
-        localStorage.setItem(generateKey("_mail_content_"), mail._content);
-        localStorage.setItem(generateKey("_mail_is_sent_"), mail._sent);
-        localStorage.setItem(generateKey("_mail_is_edited_"), mail._edited._argument);
-        localStorage.setItem(generateKey("_mail_is_public_"), mail._public);
-        localStorage.setItem(generateKey("_timestamp_"), mail._timestamp);
+        localStorage.setItem(generateKey("_mail_content_"), mail.content);
+        localStorage.setItem(generateKey("_mail_is_sent_"), mail.sent);
+        localStorage.setItem(generateKey("_mail_is_edited_"), mail.edited);
+        localStorage.setItem(generateKey("_mail_is_public_"), mail.public);
+        localStorage.setItem(generateKey("_timestamp_"), mail.timestamp);
     }
     localStorage.setItem(item.id + "_mail_amount_" + item.index, mails.length);
 }
@@ -340,13 +340,13 @@ function saveChatters(item) {
 }
 
 function saveSubscription(subscription) {
-    localStorage.setItem("subscription_type", subscription._type);
-    localStorage.setItem("subscription_status", subscription._status);
-    localStorage.setItem("subscription_price", subscription._price);
-    localStorage.setItem("subscription_offer_expires", subscription._offer._expires);
-    localStorage.setItem("subscription_offer_type", subscription._offer._type);
-    localStorage.setItem("subscription_offer_effect", subscription._offer._effect);
-    localStorage.setItem("subscription_card_id", (subscription._cardId).toString());
+    localStorage.setItem("subscription_type", subscription.type);
+    localStorage.setItem("subscription_status", subscription.status);
+    localStorage.setItem("subscription_price", subscription.price);
+    localStorage.setItem("subscription_offer_expires", subscription.offer.expires);
+    localStorage.setItem("subscription_offer_type", subscription.offer.type);
+    localStorage.setItem("subscription_offer_effect", subscription.offer.effect);
+    localStorage.setItem("subscription_card_id", (subscription.cardId).toString());
 }
 
 function saveBulletins(item) {
@@ -358,17 +358,17 @@ function saveBulletins(item) {
             index = (item.index !== undefined ? item.index + "_" : "") + i;
         function generateKey(content) { return id + content + index; }
 
-        localStorage.setItem(generateKey("_bulletin_id_"), bulletin._primaryId);
+        localStorage.setItem(generateKey("_bulletin_id_"), bulletin.primaryId);
         savePrimitiveUser({
-            user: bulletin._author,
+            user: bulletin.author,
             id: item.id + "_bulletin",
             kind: "author",
             index: i
         });
-        localStorage.setItem(generateKey("_bulletin_content_"), bulletin._content);
-        localStorage.setItem(generateKey("_bulletin_is_sent_"), (bulletin._sent).toString());
-        localStorage.setItem(generateKey("_bulletin_is_edited_"), bulletin._edited._argument);
-        localStorage.setItem(generateKey("_bulletin_is_public_"), (bulletin._public).toString())
+        localStorage.setItem(generateKey("_bulletin_content_"), bulletin.content);
+        localStorage.setItem(generateKey("_bulletin_is_sent_"), (bulletin.sent).toString());
+        localStorage.setItem(generateKey("_bulletin_is_edited_"), bulletin.edited);
+        localStorage.setItem(generateKey("_bulletin_is_public_"), (bulletin.public).toString())
     }
     localStorage.setItem(item.id + "_bulletin_amount", (bulletins.length).toString());
 }
@@ -406,20 +406,20 @@ function saveGigs(item) {
 
     for (let i = 0; i < gigs.length; i++) {
         const gig = gigs[i];
-        const id = item.id + "_gig_" + gig._primaryId,
+        const id = item.id + "_gig_" + gig.primaryId,
             index = i;
         function generateKey(content) {
             return id + content + index;
         }
 
-        localStorage.setItem(generateKey("_event_id"), gig._event._primaryId);
+        localStorage.setItem(generateKey("_event_id"), gig.event.primaryId);
         saveAct({
-            act: gig._act,
+            act: gig.act,
             id: id,
             index: index
         });
-        localStorage.setItem(generateKey("_start_"), gig._start);
-        localStorage.setItem(generateKey("_end_"), gig._end);
+        localStorage.setItem(generateKey("_start_"), gig.start);
+        localStorage.setItem(generateKey("_end_"), gig.end);
     }
     localStorage.setItem(item.id + "_gigs_amount_" + item.index, gigs.length);
 }
@@ -431,7 +431,7 @@ function saveAct(item) {
         savePrimitiveUser({
             user: act[i],
             kind: "performer",
-            id: item.id + "_act_" + act[i]._primaryId,
+            id: item.id + "_act_" + act[i].primaryId,
             index: i
         });
     }
@@ -442,15 +442,15 @@ function saveBands(item) {
     const bands = item.bands;
 
     for (let i = 0; i < bands.length; i++) {
-        const id = item.id + "_band_" + bands[i]._primaryId;
-        localStorage.setItem(item.id + "_band_id_" + i, bands[i]._primaryId);
+        const id = item.id + "_band_" + bands[i].primaryId;
+        localStorage.setItem(item.id + "_band_id_" + i, bands[i].primaryId);
         savePrimitiveUser({
             user: bands[i],
             id: id,
             index: i
         });
         saveMembers({
-            members: bands[i]._members._data,
+            members: bands[i].members,
             id: id,
             index: i
         });
@@ -461,15 +461,15 @@ function saveBands(item) {
 function saveRequests(requests) {
     for (let i = 0; i < requests.length; i++) {
         const request = requests[i];
-        localStorage.setItem("request_primary_id_" + i, request._primaryId);
-        localStorage.setItem("request_secondary_id_" + i, request._secondaryId);
+        localStorage.setItem("request_primary_id_" + i, request.primaryId);
+        localStorage.setItem("request_secondary_id_" + i, request.secondaryId);
         saveEvents({
-            events: request._event,
-            id: "request_" + request._primaryId + "_" + request._secondaryId,
+            events: request.event,
+            id: "request_" + request.primaryId + "_" + request.secondaryId,
             index: i
         });
-        localStorage.setItem("request_approved_" + i, request._approved._argument);
-        localStorage.setItem("request_message_" + i, request._message);
+        localStorage.setItem("request_approved_" + i, request.approved);
+        localStorage.setItem("request_message_" + i, request.message);
     }
     localStorage.setItem("request_amount",requests.length);
 }
@@ -480,12 +480,12 @@ function saveMembers(item) {
     for (let i = 0; i < members.length; i++) {
         const member = members[i];
         localStorage.setItem(item.id + "_member_id_" + (item.index !== undefined ? item.index + "_" + i : i),
-            member._primaryId)
+            member.primaryId)
         savePrimitiveUser({
             user: member,
             type: "artist",
             kind: (item.index === undefined ? "of_this_user" : ""),
-            id: item.id + "_" + member._primaryId,
+            id: item.id + "_" + member.primaryId,
             index: item.index + "_" + i
         });
     }
@@ -499,13 +499,13 @@ function savePrimitiveUser(item) {
         index = (item.index === undefined ? "" : item.index),
         id = (item.id === undefined ? "" : item.id + "_");
 
-    localStorage.setItem(id + "id_" + kind + type + index, user._primaryId);
-    localStorage.setItem(id + "username_" + kind + type + index, user._username);
-    if (user._firstName !== undefined)
-        localStorage.setItem(id + "firstname_" + kind + type + index, user._firstName);
-    if (user._fullName !== undefined)
-        localStorage.setItem(id + "fullname" + kind + type + index, user._fullName);
-    if (user._lastName !== undefined)
-        localStorage.setItem(id + "lastname_" + kind + type + index, user._lastName);
-    localStorage.setItem(id + "description_" + kind + type + index, user._description);
+    localStorage.setItem(id + "id_" + kind + type + index, user.primaryId);
+    localStorage.setItem(id + "username_" + kind + type + index, user.username);
+    if (user.firstName !== undefined)
+        localStorage.setItem(id + "firstname_" + kind + type + index, user.firstName);
+    if (user.fullName !== undefined)
+        localStorage.setItem(id + "fullname" + kind + type + index, user.fullName);
+    if (user.lastName !== undefined)
+        localStorage.setItem(id + "lastname_" + kind + type + index, user.lastName);
+    localStorage.setItem(id + "description_" + kind + type + index, user.description);
 }
