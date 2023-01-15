@@ -32,43 +32,63 @@ function clearSearch() {
 }
 
 async function filterSearch() {
-    function filter() {
-        if (searchResponseElement !== undefined && document.getElementById("filter_section") !== undefined) {
-            filteredSearch = searchResponseElement;
-            filteredSearch.events.filter((event) => {
-                return (document.getElementById("city_filtering").value !== undefined ?
-                        event.contactInfo.address.city === document.getElementById("city_filtering").value
-                            : true) &&
-                    (document.getElementById("include_past_events").value !== undefined ?
-                        Date.now().toEpochMilli() <= Date.parse(event.openDoors).toEpochMilli()
-                            : true) &&
-                    (document.getElementById("earliest_date_filtering").value !== undefined ?
-                        Date.parse(document.getElementById("earliest_date_filtering").value).toEpochMilli() <= Date.parse(event.openDoors).toEpochMilli()
-                            : true) &&
-                    (document.getElementById("latest_date_filtering").value !== undefined ?
-                        Date.parse(document.getElementById("latest_date_filtering").value).toEpochMilli() >= Date.parse(event.openDoors).toEpochMilli()
-                            : true) &&
-                    (document.getElementById("only_free_events").value !== undefined ?
-                        (document.getElementById("only_free_events").value ?
-                            event.price === undefined || event.price === 0
-                                : true) : true) &&
-                    (document.getElementById("price_range") !== undefined &&
-                        document.getElementById("price_range").value !== undefined ?
-                            event.price <= document.getElementById("price_range").value
-                                : true) &&
-                    (document.getElementById("search_selector_form").value ?
-                        document.getElementById("search_selector_form").value === event.authority
-                            : true);
-            });
-            if (document.getElementById("city_filtering").value !== undefined)
-                filteredSearch.users.filter((user) => {
-                    return user.contactInfo.address.city === document.getElementById("city_filtering").value;
-                });
-        }
-    }
-    filter();
+    const city = document.getElementById("city_filtering").value,
+        pastEvents = document.getElementById("include_past_events").value === "on",
+        earliestDate = document.getElementById("earliest_date_filtering").value,
+        latestDate = document.getElementById("latest_date_filtering").value,
+        onlyFreeEvents = document.getElementById("only_free_events").value === "on";
+        console.log("only free events",onlyFreeEvents);
+        const priceRange = !onlyFreeEvents ? document.getElementById("price_range").value : undefined,
+        searchForm = document.getElementById("search_selector_form").value;
 
-    await renderDashboard(searchResponseElement);
+    filteredSearch = {
+        events: [],
+        users: []
+    }
+
+    if (searchResponseElement !== undefined && document.getElementById("filter_section") !== undefined) {
+        filteredSearch.events = searchResponseElement.events.filter((event) => {
+            const include = (city !== undefined ?
+                    event.contactInfo.address.city === city
+                        : true) &&
+                (pastEvents !== undefined ?
+                    Date.now() <= Date.parse(event.openDoors)
+                        : true) &&
+                (earliestDate !== undefined ?
+                    Date.parse(earliestDate) <= Date.parse(event.openDoors)
+                        : true) &&
+                (latestDate !== undefined ?
+                    Date.parse(latestDate) >= Date.parse(event.openDoors)
+                        : true) &&
+                (onlyFreeEvents !== undefined ?
+                    (onlyFreeEvents ?
+                        event.price === undefined || event.price === 0
+                            : true) : true) &&
+                (priceRange !== undefined ?
+                        event.price <= document.getElementById("price_range").value
+                            : true) &&
+                (searchForm === "EVENTS" || searchForm === "ANY");
+            console.log("Include event:",include);
+        });
+        filteredSearch.users = searchResponseElement.users.filter((user) => {
+            return user.contactInfo.address.city === city &&
+                (searchForm === user.authority + "S" || searchForm === "ANY");
+        });
+    }
+
+    await renderDashboard(filteredSearch);
+
+    /*
+    document.getElementById("city_filtering").value = city;
+    document.getElementById("include_past_events").value = pastEvents;
+    document.getElementById("earliest_date_filtering").value = earliestDate;
+    document.getElementById("latest_date_filtering").value = latestDate;
+    document.getElementById("only_free_events").value = onlyFreeEvents;
+    document.getElementById("search_selector_form").value = searchForm;
+    if (onlyFreeEvents)
+        document.getElementById("price_range").value = priceRange;
+
+     */
 }
 
 async function sortSearch() {

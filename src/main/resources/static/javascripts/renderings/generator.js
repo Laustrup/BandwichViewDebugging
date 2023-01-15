@@ -87,7 +87,7 @@ function generateFilterSection() {
                             These filters will affect search elements of both users and events.
                         </p>
                         <label for="city_filtering">City:</label>
-                        <input type="text" id="city_filtering" placeholder="København" onchange="filterSearch()">
+                        <input type="text" id="city_filtering" placeholder="København">
                     </div>
                 </section>
                 <section id="event_filters_section">
@@ -99,22 +99,34 @@ function generateFilterSection() {
                     </p>
                     <div class="date_filters">
                         <label for="include_past_events">Include past events:</label>
-                        <input type="checkbox" id="include_past_events" onclick="filterSearch()">
+                        <input type="checkbox" id="include_past_events">
                         <label for="earliest_date_filtering">Earliest date:</label>
-                        <input type="date" id="earliest_date_filtering" onclick="filterSearch()">
+                        <input type="date" id="earliest_date_filtering">
                         <label for="latest_date_filtering">Latest date:</label>
-                        <input type="date" id="latest_date_filtering" onclick="filterSearch()">
+                        <input type="date" id="latest_date_filtering">
                     </div>
                     <div class="price_filters">
                         <label for="only_free_events">Only free events:</label>
                         <input type="checkbox" id="only_free_events" onclick="renderPriceRange()">
-                        <div id="price_defying">
-                            <label for="price_range">Highest price:</label>
-                            <div class="slide_container">
-                                <input type="range" id="price_range" class="slider" min="0" max="3000">
-                            </div>
-                        </div>
+                        <div id="price_defying"></div>
                     </div>
+                    <section id="search_selector_section">
+                        <form id="search_selector_form">
+                            <input type="radio" id="any_radio" value="ANY">
+                            <label for="any_radio">ANY</label><br>
+                            <input type="radio" id="events_radio" value="EVENTS">
+                            <label for="events_radio">Events</label><br>
+                            <input type="radio" id="venues_radio" value="VENUES">
+                            <label for="venues">Venues</label><br>
+                            <input type="radio" id="bands_radio" value="BANDS">
+                            <label for="bands_radio">Bands</label><br>
+                            <input type="radio" id="artists_radio" value="ARTISTS">
+                            <label for="artists_radio">Artists</label><br>
+                            <input type="radio" id="participants_radio" value="PARTICIPANTS">
+                            <label for="participants_radio">Participants</label>
+                        </form>
+                        <button onclick="filterSearch()">Filter</button>
+                    </section>
                 </section>
                 <section id="sorting_section">
                     <h4 class="title">
@@ -124,7 +136,7 @@ function generateFilterSection() {
                         Pick a way of sorting.
                     </p>
                     <label for="sorting">Sort:</label>
-                    <select id="sorting" onclick="sortSearch()">
+                    <select id="sorting" oninput="sortSearch()">
                         <option value="DON'T_SORT">Don't sort</option>
                         <option value="EARLIEST_DATE">Earliest date</option>
                         <option value="LATEST_DATE">Latest date</option>
@@ -132,22 +144,6 @@ function generateFilterSection() {
                         <option value="LOWEST_PRICE">Lowest price</option>
                         <option value="ALFABETICLY">Alfabeticly</option>
                     </select>
-                </section>
-                <section id="search_selector_section">
-                    <form id="search_selector_form">
-                        <input type="radio" id="any_radio" value="ANY">
-                        <label for="any_radio">ANY</label><br>
-                        <input type="radio" id="events_radio" value="EVENTS">
-                        <label for="events_radio">Events</label><br>
-                        <input type="radio" id="venues_radio" value="VENUES">
-                        <label for="venues">Venues</label><br>
-                        <input type="radio" id="bands_radio" value="BANDS">
-                        <label for="bands_radio">Bands</label><br>
-                        <input type="radio" id="artists_radio" value="ARTISTS">
-                        <label for="artists_radio">Artists</label><br>
-                        <input type="radio" id="participants_radio" value="PARTICIPANTS">
-                        <label for="participants_radio">Participants</label>
-                    </form>
                 </section>
             </section>
         </section>
