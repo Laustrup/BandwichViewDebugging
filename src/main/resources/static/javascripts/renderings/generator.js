@@ -17,21 +17,16 @@ function generateWelcomeSection() {
 function generateSearchSection(search) {
     console.log("Items of search section:",search);
 
-
     function generateSearchContainers() {
-        let containers = generateEventContainers(search.events);
-        search.users.forEach((user) => {
-            containers += `
-                <div class="container">
-                    <div class="wrapper">
-                        <a onclick="changeURL(${userURL(user.id)})">
-                            <h5 class="body_text">
-                                ${(user.username !== undefined ? user.username : user.title)}
-                            </h5>
-                        </a>
-                    </div>
-                </div>
-            `;
+        let containers = generateItemContainers({
+            elements: search.users,
+            titleClassTag: "container_title",
+            kind: "USER"
+        });
+        containers += generateItemContainers({
+            elements: search.events,
+            titleClassTag: "container_title",
+            kind: "EVENT"
         });
 
         return `
@@ -40,8 +35,6 @@ function generateSearchSection(search) {
             </section>
         `
     }
-
-
 
     return (search !== undefined && (search.users.length > 0 || search.events.length > 0) ? `
             <section id="search_header">
@@ -53,27 +46,11 @@ function generateSearchSection(search) {
                         Hope that it is what you were looking for.
                         Notice that you can filter, sort and choose for a more specific search.
                     </p>
+                    <section id="search_index_section">
+                        ${generateSearchContainers()}
+                    </section>
                 </section>
                 ${generateFilterSection()}
-            </section>
-            <section id="search_index_section">
-                <section id="search_selector_section">
-                    <form id="search_selector_form">
-                        <input type="radio" id="any_radio" value="ANY">
-                        <label for="any_radio">ANY</label><br>
-                        <input type="radio" id="events_radio" value="EVENTS">
-                        <label for="events_radio">Events</label><br>
-                        <input type="radio" id="venues_radio" value="VENUES">
-                        <label for="venues">Venues</label><br>
-                        <input type="radio" id="bands_radio" value="BANDS">
-                        <label for="bands_radio">Bands</label><br>
-                        <input type="radio" id="artists_radio" value="ARTISTS">
-                        <label for="artists_radio">Artists</label><br>
-                        <input type="radio" id="participants_radio" value="PARTICIPANTS">
-                        <label for="participants_radio">Participants</label>
-                    </form>
-                </section>
-                ${generateSearchContainers()}
             </section>
         ` : `
             <section id="informative_welcome_section">
@@ -105,11 +82,13 @@ function generateFilterSection() {
                     <h4 class="title">
                         Common filters
                     </h4>
-                    <p class="description">
-                        These filters will affect search elements of both users and events.
-                    </p>
-                    <label for="city_filtering">City:</label>
-                    <input type="text" id="city_filtering" placeholder="København" onchange="filterSearch()">
+                    <div id="filters">
+                        <p class="description">
+                            These filters will affect search elements of both users and events.
+                        </p>
+                        <label for="city_filtering">City:</label>
+                        <input type="text" id="city_filtering" placeholder="København" onchange="filterSearch()">
+                    </div>
                 </section>
                 <section id="event_filters_section">
                     <h4 class="title">
@@ -153,6 +132,22 @@ function generateFilterSection() {
                         <option value="LOWEST_PRICE">Lowest price</option>
                         <option value="ALFABETICLY">Alfabeticly</option>
                     </select>
+                </section>
+                <section id="search_selector_section">
+                    <form id="search_selector_form">
+                        <input type="radio" id="any_radio" value="ANY">
+                        <label for="any_radio">ANY</label><br>
+                        <input type="radio" id="events_radio" value="EVENTS">
+                        <label for="events_radio">Events</label><br>
+                        <input type="radio" id="venues_radio" value="VENUES">
+                        <label for="venues">Venues</label><br>
+                        <input type="radio" id="bands_radio" value="BANDS">
+                        <label for="bands_radio">Bands</label><br>
+                        <input type="radio" id="artists_radio" value="ARTISTS">
+                        <label for="artists_radio">Artists</label><br>
+                        <input type="radio" id="participants_radio" value="PARTICIPANTS">
+                        <label for="participants_radio">Participants</label>
+                    </form>
                 </section>
             </section>
         </section>
@@ -214,7 +209,7 @@ function userContainers(users) {
     return generateItemContainers({
         elements: users,
         titleClassTag: "container_title",
-        kind: "USERT"
+        kind: "USER"
     });
 }
 
@@ -227,15 +222,6 @@ function generateGigContainers() {
     return generateItemContainers({
         elements: getGigs({ id: "user_" + localStorage.getItem("user_id") }),
         kind: "GIGS"
-    });
-}
-
-
-function generateSearchItemContainers(items) {
-    return generateItemContainers({
-        elements: items,
-        kind: "SEARCH",
-        titleClassTag: "search_item_title"
     });
 }
 
@@ -252,23 +238,6 @@ function generateAlbumContainers(user) {
         kind: "ALBUMS"
     })
 }
-/*
-<!--${generateImage({
-    endpoint: (element.albums[0].items[0].endpoint !== undefined ?
-        element.albums[0].items[0].endpoint
-        : element.albums[0].items[0].endpoint),
-    class: "container_image"
-    }
-)}-->
-
-${generateImage({
-    endpoint: (element.albums[0].items[0].endpoint !== undefined ?
-            element.albums[0].items[0].endpoint
-                : element.albums[0].items[0].endpoint),
-    class: "bulletin_container_image"
-    }
-)}
- */
 
 function generateItemContainers(item) {
     let containers = ``;
@@ -340,7 +309,7 @@ function generateAlbumItemContent(image) {
 }
 
 function generateFollowingContent(user) {
-    if (user !== undefined)
+    if (userIsLoggedIn())
         return `
             <section id="idols_section">
             ${(user.idols.length > 0 ? `

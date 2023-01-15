@@ -7,7 +7,7 @@ async function renderDashboard(search) {
                 <div id="response_message"></div>
             </section>
         </section>
-        <section>
+        <section id="dashboard_content_section">
             ${search !== undefined ? generateSearchSection(search) : ``}
             <section id="attending_events_section">
                 ${(userIsAttendingEvents(user) ? `
@@ -28,7 +28,6 @@ async function renderDashboard(search) {
                     </p>
                 `)}
             </section>
-            ${generateFollowingContent(user)}
             <section id="events_section">
                 <h3 class="title">
                     New events of Bandwich:
