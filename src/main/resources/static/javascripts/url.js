@@ -1,6 +1,6 @@
 //VIEW
 //172.18.1.14
-const viewDomainURL = "http://localhost:8082/";
+const viewDomainURL = "http://bandwich.dk:8082/";
 const
     aboutURL = viewDomainURL + "about",
     frontpageURL = viewDomainURL + "welcome",
@@ -24,7 +24,7 @@ function userURL(id) {
 
 //PERSISTENCE
 //172.18.1.14
-const apiDomainURL = "http://localhost:8081/api/";
+const apiDomainURL = "http://bandwich.dk:8081/api/";
 const apiLoginURL = apiDomainURL + "user/login",
     apiChatRoomUpsert = apiDomainURL + "chat_room/upsert";
 

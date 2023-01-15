@@ -4,6 +4,10 @@ async function renderMain() {
     //clearSearch();
     const isDeveloping = false;
 
+    renderHeader();
+    renderHead();
+    renderFooter();
+
     if (isDeveloping) {
         document.getElementById("main_content").innerHTML = `
             <h3 class="title">Sorry...</h3>
@@ -36,7 +40,7 @@ async function renderMain() {
                 break;
             }
             case profileURL: {
-                await renderProfile();
+                await renderProfile(getUser());
                 break;
             }
             case dashboardURL() || dashboardURL() + "?search_query": {
@@ -44,10 +48,7 @@ async function renderMain() {
                 break;
             }
             case dashboardURL() + "?search_query": {
-                if (searchResponseElement === undefined)
-                    await search(url[1]);
-
-                await renderDashboard(hasSorted ? sortedSearch : searchResponseElement);
+                await search(url[1]);
                 break;
             }
             case viewDomainURL + "/?chat_room": {

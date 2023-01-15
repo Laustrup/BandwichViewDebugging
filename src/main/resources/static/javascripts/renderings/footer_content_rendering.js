@@ -1,5 +1,3 @@
-renderFooter();
-
 function renderFooter() {
     document.getElementById("footer_content").innerHTML = `
     <div class="wrapper">

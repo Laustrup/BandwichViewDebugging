@@ -1,5 +1,3 @@
-renderHead();
-
 function renderHead() {
     let head = ``,
         endpoint = window.location.pathname.split('=');

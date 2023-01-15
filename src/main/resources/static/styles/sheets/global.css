@@ -143,3 +143,8 @@ footer div {
     flex-direction: column;
     margin: 50px;
 }
+
+#login_buttons .wrapper {
+    display: flex;
+    flex-direction:row;
+}

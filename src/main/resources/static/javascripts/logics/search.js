@@ -7,16 +7,19 @@ async function search(query) {
     if (query === undefined)
         query = document.getElementById("search-input").value;
 
-    console.log("Search:",query);
-    sessionStorage.setItem("has_searched","TRUE");
-    searchResponseElement = await fetchElement({
-        url: apiSearchURL(query),
-        method: POST
-    });
+    if (query !== "") {
+        console.log("Search:",query);
+        sessionStorage.setItem("has_searched","TRUE");
+        searchResponseElement = await fetchElement({
+            url: apiSearchURL(query),
+            method: POST
+        });
+    }
+
+    if (document.getElementById("search-input").value !== undefined)
+        document.getElementById("search-input").value = query;
 
     changeURLWithoutRender(dashboardURL(query));
-    if (document.getElementById("search-input").value === "")
-        document.getElementById("search-input").value = query;
     await renderDashboard(searchResponseElement);
 }
 

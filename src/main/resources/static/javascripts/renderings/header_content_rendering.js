@@ -1,5 +1,3 @@
-renderHeader();
-
 function renderHeader() {
     let leftSection = ``,
         midSection = `

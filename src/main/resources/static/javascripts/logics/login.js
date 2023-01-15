@@ -34,7 +34,7 @@ async function login() {
                     Congrats ${element.username}. You have logged in!
                 </p>
             `;
-            document.location.href = profileURL;
+            await changeURL(profileURL);
         }
     }
 }
@@ -181,7 +181,7 @@ async function signup() {
         }
         if (getUser() !== undefined) {
             localStorage.setItem("logged_in", "true");
-            window.location.href = profileURL();
+            await changeURL(profileURL);
         }
     }
 }

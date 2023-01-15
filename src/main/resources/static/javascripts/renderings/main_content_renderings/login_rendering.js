@@ -1,3 +1,5 @@
+const BAND = "BAND",PARTICIPANT = "PARTICIPANT",VENUE = "VENUE",ARTIST = "ARTIST";
+
 //TODO check requirements of the fields
 async function renderLogin() {
     if (!userIsLoggedIn()) {
@@ -15,14 +17,14 @@ async function renderLogin() {
             </section>
             <section id="login_buttons">
                 <div class="wrapper">
-                    <button onclick="${async () => { await changeURL(frontpageURL); }}" class="return_button">
+                    <button onclick="changeURL(frontpageURL)" class="return_button">
                         Go back
                     </button>
                     <button onclick="login()" class="action_button">
                         Log in
                     </button>
-                    <p class="detail_description" id="response_message"></p>
                 </div>
+                <p class="detail_description" id="response_message"></p>
             </section>
         `;
 
@@ -56,22 +58,31 @@ async function renderLogin() {
 }
 
 function analyseLogin() {
+    const emailFieldExists = document.getElementById("email") !== null;
     let username = document.getElementById("username").value,
-        password = document.getElementById("password").value;
+        password = document.getElementById("password").value,
+        email = emailFieldExists ? document.getElementById("email").value : undefined;
 
     console.log("Username length", username.length);
     console.log("Password length", password.length);
+    if (emailFieldExists)
+        console.log("Email", email);
 
     let usernameIsValid = username.length <= 50 && username.length !== 0,
         passwordIsValid = /\d/g.test(password) &&
             /[~`!#$%^&*+=\-\[\]\\';,/{}|":<>?]/g.test(password)
-            && password.length >= 8 && password.length !== 0;
+            && password.length >= 8 && password.length !== 0,
+        emailIsValid = emailFieldExists ? email.match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        ) : false;
 
     document.getElementById("username_detail").innerText = (password.length === 0 ? "" : (!usernameIsValid ?
             "Length of title can't be more than 50 characters..." : ""));
     document.getElementById("password_detail").innerText = (password.length === 0 ? "" : (!passwordIsValid ?
             "Length of password must be at least 8 characters " +
             "and the password must contain a special character and number..." : ""));
+    if (emailIsValid)
+        document.getElementById("email_detail").innerText = "That is not an email!";
 
     sessionStorage.setItem("login_is_valid",(usernameIsValid&&passwordIsValid).toString());
 }
@@ -83,12 +94,12 @@ function renderSignup() {
                     <section id="login_kind_section">
                         <div class="wrapper">
                             <label for="kind">Pick the kind of user you wish to create:</label>
-                            <select id="kind">
+                            <select id="kind" oninput="renderSignupFields()">
                                 <option value=""></option>
-                                <option value="PARTICIPANT">Participant</option>
-                                <option value="ARTIST">Artist</option>
-                                <option value="BAND">Band</option>
-                                <option value="VENUE">Venue</option>
+                                <option value="${PARTICIPANT}">Participant</option>
+                                <option value="${ARTIST}">Artist</option>
+                                <option value="${BAND}">Band</option>
+                                <option value="${VENUE}">Venue</option>
                             </select>
                         </div>
                     </section>
@@ -116,7 +127,7 @@ function renderSignup() {
                 <section id="login_title_section">
                     <div class="wrapper">
                         <h4 class="title">
-                            Sign up |
+                            Sign up
                         </h4>
                         <p class="description">
                             Fill the fields in order to signup.
@@ -139,8 +150,6 @@ function renderSignup() {
                 </section>
             </div>
         `;
-
-    renderSignupFields();
 }
 
 //TODO Perhaps use this as a kind selector?
@@ -155,20 +164,9 @@ function renderSignup() {
 </form>
  */
 function renderSignupFields() {
-    let kind = document.getElementById("kind").value,
-        username = document.getElementById("username").value,
-        password = document.getElementById("password").value,
-        email = document.getElementById("email").value;
-    let usernameDetail = (username !== undefined && username.length > 50 ?
-            "Length of title can't be more than 50 charactors..." : ""),
-        passwordDetail = (password !== undefined && (password.length < 8 ||
-        !/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/g.test(password) ||
-        !/\d/g.test(password)) ?
-            "Length of password must be at least 8 charactors " +
-            "and the password must contain a special charactor and number..." : ""),
-        emailDetail = (email !== undefined && !/[@.]/g.test(email) ? "That is not an email..." : "");
+    let kind = document.getElementById("kind").value;
 
-    let names = (kind === "PARTICIPANT" || kind === "ARTIST" ? `
+    let names = (kind === PARTICIPANT || kind === ARTIST ? `
         <label for="first_name">First name*:</label>
         <input type="text" id="first_name" placeholder="James">
         
@@ -182,12 +180,12 @@ function renderSignupFields() {
                 ${names}
                 
                 <label for="username">Username*:</label>
-                <input type="text" id="username" placeholder="username...">
-                <p class="detail_description">${usernameDetail}</p>
+                <input type="text" id="username" placeholder="username..." oninput="analyseLogin()">
+                <p class="detail_description" id="username_detail"></p>
                 
                 <label for="password">Password*:</label>
-                <input type="password" id="password" placeholder="********">
-                <p class="detail_description">${passwordDetail}</p>
+                <input type="password" id="password" placeholder="********" oninput="analyseLogin()">
+                <p class="detail_description" id="password_detail"></p>
                 
                 <label for="description">Description:</label>
                 <input type="text" id="description" placeholder="This will describe your user...">
@@ -204,7 +202,7 @@ function renderSignupFields() {
                 
                 <label for="email">Email:</label>
                 <input type="text" id="email" placeholder="Something@mail.com">
-                <p class="detail_description">${emailDetail}</p>
+                <p class="detail_description" id="email_description"></p>
                 
                 <label for="first_phone_number_digits">First phone digits:</label>
                 <input type="text" id="first_phone_number_digits" placeholder="+45">
@@ -247,7 +245,7 @@ function renderSignupFields() {
     `;
 
     switch (kind) {
-        case "ARTIST": {
+        case ARTIST: {
             document.getElementById("signup_fields").innerHTML = `
                 ${html}
 
@@ -255,7 +253,7 @@ function renderSignupFields() {
                 <input type="text" id="runner" class="wide_text_input" placeholder="Describes the gear you have and require">
             `;
             break;
-        } case "BAND": {
+        } case BAND: {
             // TODO must only happen, if the logged in user is an Artist
             if (userIsLoggedIn())
                 document.getElementById("signup_fields").innerHTML = `
@@ -266,7 +264,7 @@ function renderSignupFields() {
                 `;
             break;
         }
-        case "VENUE": {
+        case VENUE: {
             document.getElementById("signup_fields").innerHTML = `
                 ${html}
                 
