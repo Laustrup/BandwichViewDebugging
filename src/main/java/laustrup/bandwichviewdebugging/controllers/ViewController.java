@@ -18,6 +18,7 @@ public class ViewController {
     @GetMapping(startEndpoint+"profile") public String profile() { return _index; }
     @GetMapping(startEndpoint+"dashboard") public String dashboard() { return _index; }
     @GetMapping(startEndpoint+"log_in") public String login() { return _index; }
+    @GetMapping(startEndpoint+"log_out") public String logout() { return _index; }
     @GetMapping(startEndpoint+"sign_up") public String signup() { return _index; }
     @GetMapping(startEndpoint+"dashboard/?search_query={query}")
     public String search(@PathVariable(name = "query") String searchQuery) { return _index; }

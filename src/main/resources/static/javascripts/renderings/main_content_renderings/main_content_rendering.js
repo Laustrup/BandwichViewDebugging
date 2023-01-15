@@ -23,8 +23,13 @@ async function renderMain() {
                 break;
             }
             case loginURL: {
-                renderLogin();
+                await renderLogin();
                 break;
+            }
+            case logoutURL: {
+                await logout();
+                await renderFrontpage();
+                break
             }
             case signupURL: {
                 renderSignup();

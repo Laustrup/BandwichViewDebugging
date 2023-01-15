@@ -5,7 +5,8 @@ const
     aboutURL = viewDomainURL + "about",
     frontpageURL = viewDomainURL + "welcome",
     profileURL = viewDomainURL + "profile",
-    loginURL = viewDomainURL + "log_in",
+    loginURL = viewDomainURL + "log_in"
+    logoutURL = viewDomainURL + "log_out",
     signupURL = viewDomainURL + "sign_up";
 
 function dashboardURL(searchQuery) {

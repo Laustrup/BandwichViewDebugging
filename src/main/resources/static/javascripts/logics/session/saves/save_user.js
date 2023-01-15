@@ -1,5 +1,5 @@
 function saveUser(user) {
-    if (userIsLoggedIn()) {
+    if (!userIsLoggedIn()) {
         const id = user.primaryId;
 
         localStorage.setItem("user_id",id);
@@ -80,6 +80,7 @@ function saveUser(user) {
         localStorage.setItem("size", (user.size !== undefined ? user.size : undefined));
         localStorage.setItem("timestamp",user.timestamp);
 
+        localStorage.setItem("user_is_logged_in",user.primaryId);
         return getUser();
     }
     return undefined;
@@ -89,19 +90,19 @@ function saveContactInformation(item) {
     const index = (item.index !== undefined ? "_" + item.index : "");
     function generateKey(content) { return item.id + content + index; }
 
-    localStorage.setItem(generateKey("_email"), item.email);
-    localStorage.setItem(generateKey("_phone_country_title"), item.phone.country.title);
-    localStorage.setItem(generateKey("_phone_country_indexes"), item.phone.country.indexes);
-    localStorage.setItem(generateKey("_phone_number_digits"), item.phone.country.firstPhoneNumberDigits);
-    localStorage.setItem(generateKey("_phone_numbers"), item.numbers);
-    localStorage.setItem(generateKey("_phone_is_mobile"), item.mobile);
-    localStorage.setItem(generateKey("_street"), item.street);
-    localStorage.setItem(generateKey("_floor"), item.floor);
-    localStorage.setItem(generateKey("_postal"), item.postal);
-    localStorage.setItem(generateKey("_city"), item.city);
-    localStorage.setItem(generateKey("_country_title"), item.country.title);
-    localStorage.setItem(generateKey("_country_indexes"), item.country.indexes);
-    localStorage.setItem(generateKey("_country_number_digits"), item.country.firstPhoneNumberDigits);
+    localStorage.setItem(generateKey("_email"), item.info.email);
+    localStorage.setItem(generateKey("_phone_country_title"), item.info.phone.country.title);
+    localStorage.setItem(generateKey("_phone_country_indexes"), item.info.phone.country.indexes);
+    localStorage.setItem(generateKey("_phone_number_digits"), item.info.phone.country.firstPhoneNumberDigits);
+    localStorage.setItem(generateKey("_phone_numbers"), item.info.phone.numbers);
+    localStorage.setItem(generateKey("_phone_is_mobile"), item.info.phone.mobile);
+    localStorage.setItem(generateKey("_street"), item.info.address.street);
+    localStorage.setItem(generateKey("_floor"), item.info.address.floor);
+    localStorage.setItem(generateKey("_postal"), item.info.address.postal);
+    localStorage.setItem(generateKey("_city"), item.info.address.city);
+    localStorage.setItem(generateKey("_country_title"), item.info.country.title);
+    localStorage.setItem(generateKey("_country_indexes"), item.info.country.indexes);
+    localStorage.setItem(generateKey("_country_number_digits"), item.info.country.firstPhoneNumberDigits);
 }
 
 function saveAlbums(item) {
@@ -374,17 +375,19 @@ function saveBulletins(item) {
 }
 
 function saveIdols(item) {
-    const idols = item.idols;
+    if (item.idols !== null) {
+        const idols = item.idols;
 
-    for (let i = 0; i < idols.length; i++) {
-        savePrimitiveUser({
-            user: idols[i],
-            kind: "idol",
-            id: item.id,
-            index: i
-        })
+        for (let i = 0; i < idols.length; i++) {
+            savePrimitiveUser({
+                user: idols[i],
+                kind: "idol",
+                id: item.id,
+                index: i
+            })
+        }
+        localStorage.setItem(item.id + "_idol_amount", idols.length);
     }
-    localStorage.setItem(item.id + "_idol_amount", idols.length);
 }
 
 function saveFans(item) {

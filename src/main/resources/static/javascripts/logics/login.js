@@ -29,7 +29,6 @@ async function login() {
             `;
         } else {
             saveUser(element);
-            localStorage.setItem("logged_in", "true")
             document.getElementById("response_message").innerHTML = `
                 <p class="body_text">
                     Congrats ${element.username}. You have logged in!
@@ -39,14 +38,14 @@ async function login() {
         }
     }
 }
-function logout() {
+async function logout() {
     localStorage.clear();
+    await changeURL(frontpageURL);
     document.getElementById("response_message").innerHTML = `
         <p class="body_text">
             You have logged out!
         </p>
     `;
-    document.location.href = frontpageURL;
 }
 async function signup() {
     const kind = document.getElementById("kind").value;
@@ -198,5 +197,7 @@ async function updateSession() {
 }
 
 function userIsLoggedIn() {
-    return localStorage.getItem("logged_in") === "true";
+    if (localStorage.getItem("user_is_logged_in") !== undefined)
+        return localStorage.getItem("user_is_logged_in") !== null;
+    return false;
 }

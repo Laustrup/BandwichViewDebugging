@@ -12,8 +12,11 @@ function renderHeader() {
             </section>
         `,
         rightSection = ``;
+
     const user = getUser();
-    if (user === undefined) {
+    console.log("Logged in user:",user);
+
+    if (!userIsLoggedIn()) {
         leftSection = `
             <section id="header_left">
                 <div class="wrapper">
@@ -73,7 +76,7 @@ function renderHeader() {
                     ${user.username}
                 </a>
                 |
-                <a onclick="logout()" class="login_tag">
+                <a href="${logoutURL}" class="login_tag">
                     logout
                 </a>
             </section> 

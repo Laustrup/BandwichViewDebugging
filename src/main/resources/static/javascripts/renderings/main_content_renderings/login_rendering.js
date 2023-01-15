@@ -34,7 +34,7 @@ async function renderLogin() {
                         </h4>
                         <p class="description">
                             Fill the fields in order to login.
-                            The title can either your username or Email.
+                            The title can either be your username or Email.
                         </p>
                     </div>
                 </section>
