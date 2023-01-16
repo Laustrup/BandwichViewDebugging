@@ -1,7 +1,7 @@
 const isDeveloping = false;
 
 //VIEW
-const viewDomainURL = "http://" + (isDeveloping ? "localhost" : "bandwich") + ":8082/";
+const viewDomainURL = "http://" + (isDeveloping ? "localhost" : "bandwich.dk") + ":8082/";
 const
     aboutURL = viewDomainURL + "about",
     frontpageURL = viewDomainURL + "welcome",
@@ -24,7 +24,7 @@ function userURL(id) {
 }
 
 //PERSISTENCE
-const apiDomainURL = "http://" + (isDeveloping ? "localhost" : "bandwich") + ":8081/api/";
+const apiDomainURL = "http://" + (isDeveloping ? "localhost" : "bandwich.dk") + ":8081/api/";
 const apiLoginURL = apiDomainURL + "user/login",
     apiChatRoomUpsert = apiDomainURL + "chat_room/upsert";
 
